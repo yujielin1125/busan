@@ -1,0 +1,1269 @@
+<!doctype html>
+<html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>釜山隨行</title><style>*{box-sizing:border-box}html,body{margin:0}</style></head><body>
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@700&display=swap">
+<style>
+/* Layout: one narrow column, phone first. Tabs on top, day timeline with loose slots, bottom sheet for "what now?" */
+:root{
+  --bg:#F2F6F6; --surface:#FFFFFF; --ink:#11262E; --muted:#587078; --line:#D3DFE1;
+  --sea:#0F6E7C; --sea-soft:#DCEEF0; --buoy:#D9481F; --buoy-soft:#FBE4DC; --ok:#2E7D4F; --d1:#D9481F; --d2:#0F6E7C; --d3:#6B4FC8;
+  --f-display:"Noto Serif TC","Songti TC",serif; --f-body:"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif; --f-mono:"DM Mono",ui-monospace,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0C181D; --surface:#13252C; --ink:#E4EFF1; --muted:#8CA5AC; --line:#25404A;
+  --sea:#58C4D2; --sea-soft:#17353C; --buoy:#FF7D55; --buoy-soft:#3A2119; --ok:#6CC38E; --d1:#FF7D55; --d2:#58C4D2; --d3:#A99BFF; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0C181D; --surface:#13252C; --ink:#E4EFF1; --muted:#8CA5AC; --line:#25404A;
+  --sea:#58C4D2; --sea-soft:#17353C; --buoy:#FF7D55; --buoy-soft:#3A2119; --ok:#6CC38E; --d1:#FF7D55; --d2:#58C4D2; --d3:#A99BFF; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.55;
+  padding-block:0 96px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:640px;margin:0 auto}
+header{padding-top:20px;display:flex;flex-direction:column;gap:4px}
+h1{font-family:var(--f-display);font-size:28px;line-height:1.2;margin:0;text-wrap:balance}
+.sub{color:var(--muted);font-size:13px;margin:0}
+.demo{background:var(--buoy-soft);color:var(--ink);border-radius:10px;padding:8px 12px;font-size:13px;margin-top:12px}
+nav.tabs{display:flex;gap:4px;margin:16px 0;border-bottom:1px solid var(--line);position:sticky;top:env(safe-area-inset-top,0px);background:var(--bg);z-index:5}
+nav.tabs button{flex:1;background:none;border:0;border-bottom:3px solid transparent;color:var(--muted);font:inherit;font-weight:500;padding:12px 4px;cursor:pointer}
+nav.tabs button[aria-selected="true"]{color:var(--sea);border-bottom-color:var(--sea)}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,a:focus-visible{outline:2px solid var(--sea);outline-offset:2px}
+.stack{display:flex;flex-direction:column;gap:16px}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:14px}
+.panel h2{font-size:16px;margin:0;font-weight:700}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:420px){.grid2{grid-template-columns:1fr}}
+label.f{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--muted);min-width:0}
+input,select,textarea{font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px;width:100%;min-width:0}
+input,select,textarea{box-sizing:border-box;max-width:100%}input[type=date],input[type=time]{-webkit-appearance:none;appearance:none;display:block;width:100%;min-width:0;max-width:100%;min-height:44px;text-align:left;line-height:1.2}input[type=date]::-webkit-date-and-time-value,input[type=time]::-webkit-date-and-time-value{text-align:left;min-width:0}label.f{min-width:0}.grid2>*{min-width:0}
+textarea{min-height:84px;resize:vertical}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font:inherit;font-size:14px;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:8px 14px;cursor:pointer}
+.chip[aria-pressed="true"],.chip.on{background:var(--sea);border-color:var(--sea);color:#fff}
+:root[data-theme="dark"] .chip.on,:root[data-theme="dark"] .chip[aria-pressed="true"]{color:#06222a}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .chip.on,:root:not([data-theme="light"]) .chip[aria-pressed="true"]{color:#06222a}}
+.btn{font:inherit;font-weight:500;border:1px solid var(--sea);background:var(--sea);color:#fff;border-radius:10px;padding:10px 16px;cursor:pointer}
+:root[data-theme="dark"] .btn{color:#06222a}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .btn{color:#06222a}}
+.btn.ghost{background:transparent;color:var(--sea)}
+:root[data-theme="dark"] .btn.ghost{color:var(--sea)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .btn.ghost{color:var(--sea)}}
+.btn.warn{background:var(--buoy);border-color:var(--buoy);color:#fff}
+.btn.sm{padding:6px 12px;font-size:13px}
+.btn:disabled{opacity:.5;cursor:default}
+.hint{font-size:13px;color:var(--muted);margin:0}
+.mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+/* days */
+.days{display:flex;gap:8px}
+.days .chip{flex:1;text-align:center;padding:10px 4px}
+.daybar{background:var(--sea-soft);border-radius:12px;padding:12px 14px;display:flex;flex-direction:column;gap:4px}
+.daybar b{font-family:var(--f-display);font-size:18px}
+.daybar .line{font-size:13px;color:var(--ink)}
+.daybar .route{font-size:13px;color:var(--muted)}
+.nowcard{background:var(--buoy);color:#fff;border:0;border-radius:14px;padding:16px;text-align:left;font:inherit;cursor:pointer;display:flex;flex-direction:column;gap:2px;width:100%}
+.nowcard b{font-size:18px;font-family:var(--f-display)}
+.nowcard span{font-size:13px;opacity:.95}
+:root[data-theme="dark"] .nowcard{color:#2a0f06}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .nowcard{color:#2a0f06}}
+.slots{display:flex;flex-direction:column;gap:0;position:relative}
+.slot{display:grid;grid-template-columns:84px 1fr;gap:12px;padding:0 0 14px;position:relative}
+.slot .tm{font-family:var(--f-mono);font-size:13px;color:var(--muted);text-align:right;padding-top:14px}
+.slot .tm small{display:block;font-family:var(--f-body);font-size:11px}
+.slot .card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.slot.empty .card{border-style:dashed;background:transparent;cursor:pointer}
+.slot.skip .card{opacity:.55}
+.slot .kind{font-size:12px;color:var(--sea);font-weight:700;letter-spacing:.06em}
+.slot .name{font-weight:700;font-size:16px;overflow-wrap:anywhere}
+.slot .meta{font-size:13px;color:var(--muted)}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.tag{font-size:12px;border-radius:6px;padding:1px 8px;background:var(--sea-soft);color:var(--sea);white-space:nowrap}
+.tag.pin{background:var(--buoy-soft);color:var(--buoy)}
+a.map{color:var(--sea);font-size:13px}
+/* places */
+.pl{display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-top:1px solid var(--line)}
+.pl:first-child{border-top:0}
+.pl .t{flex:1;min-width:0}
+.pl .t b{overflow-wrap:anywhere}
+.pl.off{opacity:.45}
+.sw{font:inherit;font-size:12px;border:1px solid var(--line);background:none;color:var(--ink);border-radius:8px;padding:4px 10px;cursor:pointer}
+/* sheet */
+.bg{position:fixed;inset:0;background:rgba(5,15,20,.5);z-index:20}
+.sheet{position:fixed;left:0;right:0;bottom:0;max-height:88%;overflow:auto;background:var(--bg);z-index:21;border-radius:18px 18px 0 0;
+  padding:18px max(16px,env(safe-area-inset-left,0px)) calc(24px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-right,0px));box-shadow:0 -8px 30px rgba(0,0,0,.25)}
+.sheet .in{max-width:640px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+.sheet h3{margin:0;font-family:var(--f-display);font-size:20px;text-wrap:balance}
+.opt{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px;display:flex;flex-direction:column;gap:6px}
+.slist{display:flex;flex-direction:column;gap:8px;max-height:46vh;overflow-y:auto;margin:6px 0;padding-right:2px}.srow{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;gap:3px}.sr1{display:flex;justify-content:space-between;gap:8px;align-items:center;font-size:15px}.sri{font-size:13px}.opt .name{font-weight:700;font-size:16px}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);border-radius:10px;padding:10px 16px;font-size:14px;z-index:30;max-width:90%}
+.msg{font-size:13px;color:var(--muted);white-space:pre-wrap}
+.themebtn{position:absolute;right:0;top:20px}
+.mapbox{border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--bg)}
+.mapbox svg{display:block;width:100%;height:auto}
+.regs{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px}.regs .chip{flex:none;white-space:nowrap;padding:6px 12px;font-size:13px;min-height:0;width:auto}
+.mapwrap img{filter:saturate(.5) contrast(.9) brightness(1.06)}
+.mapkey{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12px;color:var(--muted);margin:6px 0}.mapkey i{display:inline-flex;width:18px;height:18px;border-radius:50%;color:#fff;font-style:normal;font-size:11px;font-weight:700;align-items:center;justify-content:center;vertical-align:middle;margin-right:4px}.mapkey i.box{background:#1b1b1b;border-radius:4px}.mapkey i.ring{background:#fff;color:#1b1b1b;border:2px solid #1b1b1b}.mapkey b{font-size:11px;border:1px solid var(--line);border-radius:10px;padding:0 5px;color:var(--ink)}
+.lostbox>summary{cursor:pointer;list-style:none}.lostl{max-height:260px;overflow:auto;margin:8px 0;border-top:1px solid var(--line)}.lr{display:flex;flex-direction:column;padding:7px 0;border-bottom:1px solid var(--line);font-size:13px}.lr span{color:var(--muted);font-size:12px}
+.tmbox{position:relative;display:inline-block;font-family:var(--f-mono);font-size:15px;font-weight:700;color:var(--ink);padding:4px 8px;border:1px dashed var(--line);border-radius:8px;cursor:pointer}.tmbox input{position:absolute;left:0;top:0;width:100%;height:100%;opacity:0;cursor:pointer}
+.mv{position:relative;height:min(64vh,520px);min-height:340px;overflow:hidden;border:1px solid var(--line);border-radius:14px;background:#aad3df;touch-action:none;user-select:none;-webkit-user-select:none;margin:10px 0}
+.mv canvas#vmap{position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none}.mv.vec .mvi>img,.mv.vec .mvi img.dt{display:none!important}.mvi{position:absolute;left:0;top:0;transform-origin:0 0;--ik:1}.mvi img{display:block;max-width:none;filter:saturate(.6) brightness(1.04)}.mvi img.dt{position:absolute;opacity:0;transition:opacity .25s;filter:none;-webkit-mask-image:linear-gradient(to right,transparent,#000 6%,#000 94%,transparent),linear-gradient(to bottom,transparent,#000 5%,#000 95%,transparent);-webkit-mask-composite:source-in;mask-image:linear-gradient(to right,transparent,#000 6%,#000 94%,transparent),linear-gradient(to bottom,transparent,#000 5%,#000 95%,transparent);mask-composite:intersect;pointer-events:none}.mv.zd img.dt:not(.dt2){opacity:1}.mv.zd2 img.dt2{opacity:1}.mv.zd3 img.dt3{opacity:1}.mvi svg{position:absolute;left:0;top:0;pointer-events:none}
+.mk{position:absolute;transform:translate(-50%,-50%) scale(var(--ik));font:700 12px/1 var(--f-body);border:0;padding:0;background:none;cursor:pointer;box-sizing:border-box}
+.mk.cur{width:24px;height:24px;border-radius:50%;background:var(--c);color:#fff;border:2px solid #fff;box-shadow:0 1px 3px rgba(0,0,0,.4);z-index:5;display:flex;align-items:center;justify-content:center}
+.mk.od{width:16px;height:16px;border-radius:50%;background:var(--c);color:#fff;border:2px solid #fff;font-size:9px;opacity:.75;z-index:3;display:flex;align-items:center;justify-content:center}
+.mk.un{width:10px;height:10px;border-radius:50%;background:#fff;border:2px solid #333;z-index:2;display:flex;align-items:center;justify-content:center;font-size:9px;color:#111}
+.mk.un.nb{width:20px;height:20px;font-size:11px;z-index:4}
+.mk.ho{width:22px;height:22px;border-radius:5px;background:#1b1b1b;color:#fff;border:2px solid #fff;display:flex;align-items:center;justify-content:center;z-index:5;font-size:11px}
+.mk.sel{outline:3px solid #1b1b1b;outline-offset:2px}
+.mk .lb{position:absolute;left:100%;top:50%;transform:translateY(-50%);margin-left:5px;white-space:nowrap;font:600 12px var(--f-body);color:#111;text-shadow:0 0 2px #fff,0 0 2px #fff,0 0 3px #fff,0 0 3px #fff;pointer-events:none;display:none}
+.mk.cur .lb,.mk.ho .lb,.mk.nb .lb{display:block}.mk.cur .lb{font-weight:700;font-size:13px}.mv.zl .mk .lb{display:block}
+.leg{position:absolute;transform:translate(-50%,-50%) scale(var(--ik));font:600 10px var(--f-body);background:#fff;color:#111;border:1px solid #888;border-radius:9px;padding:1px 5px;z-index:4;pointer-events:none;display:none}.mv.zm .leg{display:block}
+.mvc{position:absolute;right:8px;top:8px;display:flex;flex-direction:column;gap:6px;z-index:10}.mvc button{width:34px;height:34px;border-radius:8px;border:1px solid #bbb;background:#fff;color:#111;font:700 15px var(--f-body);cursor:pointer}
+.mvat{position:absolute;left:6px;bottom:4px;font-size:10px;color:#333;background:rgba(255,255,255,.8);padding:1px 4px;border-radius:4px;z-index:10}
+.mapkey i.dot{background:#fff;border:2px solid #333;width:10px;height:10px}
+.grp{display:flex;justify-content:space-between;align-items:baseline;margin:14px 0 4px;padding-bottom:4px;border-bottom:2px solid var(--sea-soft);color:var(--sea)}.grp span{font-size:12px;color:var(--muted)}
+.pl2{border-bottom:1px solid var(--line);padding:10px 0}.pl2.off{opacity:.5}.pl2 .top{display:flex;gap:10px;justify-content:space-between;align-items:flex-start}.pl2 .t{min-width:0}.pl2 .t b{overflow-wrap:anywhere}.pl2 .acts{display:flex;flex-direction:column;gap:6px;flex:none}
+details.oh>summary{font-size:12px;color:var(--sea);cursor:pointer;padding:4px 0}details.addbox>summary{cursor:pointer;padding:2px 0}details.addbox[open]>summary{margin-bottom:10px}
+.tmin{font:inherit;font-family:var(--f-mono);font-size:13px;border:1px solid var(--line);border-radius:8px;padding:3px 2px;width:78px;background:var(--surface);color:var(--ink);text-align:center}
+.mapscroll{border:1px solid var(--line);border-radius:14px;overflow:hidden;margin:10px 0}.mapwrap{position:relative;line-height:0}.mapwrap img{display:block;width:100%;height:auto}.mapwrap svg{position:absolute;left:0;top:0;width:100%;height:100%}
+.albl{font-size:9px;fill:var(--muted);opacity:.85}
+.lg{display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-top:1px solid var(--line)}
+.lg:first-child{border-top:0}
+.lg .t{flex:1;min-width:0}
+.lg .t b{overflow-wrap:anywhere}
+.dotn{flex:none;width:22px;height:22px;border-radius:50%;color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-top:1px}
+.key{font-size:12px;color:var(--muted);display:flex;gap:12px;flex-wrap:wrap}
+@media (prefers-reduced-motion:no-preference){.chip,.btn,.slot .card{transition:background .15s,border-color .15s}}
+</style>
+
+<div class="wrap" id="root">
+  <header style="position:relative">
+    <h1>釜山隨行</h1>
+    <p class="sub">三天兩夜，只排骨架，細節現場再決定</p>
+  </header>
+  <div id="app"></div>
+</div>
+<div id="layer"></div>
+<div id="toast" class="toast" hidden></div>
+
+<script>
+(function(){
+"use strict";
+var KEY="busan-trip-v1";
+var AREAS={"海雲台":[35.1587,129.1604],"青沙浦·松亭":[35.1700,129.1970],"機張":[35.1883,129.2231],"Centum City":[35.1688,129.1306],"廣安里":[35.1531,129.1186],"西面":[35.1579,129.0595],"文峴·大淵":[35.1370,129.0700],"南浦·札嘎其":[35.0988,129.0286],"釜山站":[35.1151,129.0422],"甘川·松島":[35.0870,129.0130],"影島":[35.0650,129.0700],"東萊·金井":[35.2150,129.0850]};
+var AIRPORT=[35.1795,128.9382];
+var CATS={food:"餐廳小吃",cafe:"咖啡甜點",sight:"景點",shop:"逛街",night:"夜景夜間",rest:"休息放鬆",stay:"住宿交通",life:"生活服務",other:"待分類"};
+var MOODS=[["any","全部"],["eat","吃一頓"],["cafe","喝咖啡休息"],["sight","看風景"],["shop","逛街買東西"],["rain","下雨想待室內"],["night","夜景夜間"]];
+var TPL=[{k:"morning",label:"上午",hint:"sight"},{k:"lunch",label:"午餐",hint:"food",t:750},{k:"afternoon",label:"下午",hint:"sight",t:870},{k:"cafe",label:"午茶",hint:"cafe",t:990},{k:"dinner",label:"晚餐",hint:"food",t:1110},{k:"night",label:"夜間",hint:"night",t:1230},{k:"late",label:"宵夜／第二攤",hint:"food",t:1290}];
+var PACE={relaxed:["lunch","afternoon","dinner"],normal:["morning","lunch","afternoon","dinner"],packed:["morning","lunch","afternoon","cafe","dinner","night","late"]};
+var PACE_LABEL={relaxed:"悠閒 · 約3站",normal:"普通 · 約4站",packed:"緊湊 · 約7站"};
+var PACE_HINT={relaxed:"今天放鬆：午餐、下午一站、晚餐，其他時間自由。",normal:"今天正常：上午、午餐、下午、晚餐。",packed:"今天塞滿：從上午排到夜間，含咖啡與夜景。"};
+function defDays(){return {1:{pace:"relaxed",home:"21:30"},2:{pace:"packed",wake:"08:00",home:"22:30"},3:{pace:"relaxed",wake:"08:30"}};}
+function dg(d,k){var o=(state.days&&state.days[d])||{},df=defDays()[d]||{};return o[k]!=null?o[k]:(df[k]!=null?df[k]:"");}
+function dset(d){state.days=state.days||{};return state.days[d]||(state.days[d]={});}
+function demoPlaces(){return [
+ ["海雲台海水浴場","海雲台","sight",35.1587,129.1604,0,1,2,"早晨散步最舒服，傍晚人潮較多"],
+ ["海雲台市場","海雲台","food",35.1633,129.1645,0,1,1,"小吃集中，適合隨性邊走邊吃"],
+ ["海雲台排骨名店","海雲台","food",35.1634,129.1613,0,0,2,"排骨類，用餐時段常需候位"],
+ ["青沙浦藍線公園","青沙浦·松亭","sight",35.1619,129.1951,0,1,3,"海岸步道與天空膠囊，可只走一小段"],
+ ["松亭豬肉湯飯","青沙浦·松亭","food",35.1806,129.1996,0,0,2,"在地豬肉湯飯，適合配青沙浦行程"],
+ ["海東龍宮寺","機張","sight",35.1883,129.2231,0,0,3,"海邊寺廟，早上去人較少，車程較遠"],
+ ["達尾山咖啡街","海雲台","cafe",35.1647,129.1852,0,0,2,"坡上海景咖啡館，適合午後休息"],
+ ["甘川文化村","甘川·松島","sight",35.0976,129.0106,0,1,3,"彩色山城，建議白天去"],
+ ["松島天空步道","甘川·松島","sight",35.0757,129.0165,0,0,2,"海上步道，可和甘川排同一天"],
+ ["國際市場與富平罐頭市場","南浦·札嘎其","shop",35.1007,129.0267,0,0,2,"傳統市場，邊逛邊吃"],
+ ["BIFF 廣場糖餅","南浦·札嘎其","food",35.0988,129.0289,0,1,2,"街邊小吃，順路買來吃"],
+ ["龍頭山公園與釜山塔","南浦·札嘎其","night",35.1006,129.0323,0,0,2,"傍晚上塔看夜景"],
+ ["白淺灘文化村","影島",  "sight",35.0788,129.0447,0,0,2,"海岸拍照點，交通需預留時間"],
+ ["太宗台","影島","sight",35.0513,129.0873,0,0,2,"海岸懸崖景觀，步行量較大"],
+ ["廣安里海邊與廣安大橋夜景","廣安里","night",35.1531,129.1186,0,1,3,"夜景熱門，晚餐後散步剛好"],
+ ["廣安里海景咖啡街","廣安里","cafe",35.1537,129.1195,1,0,2,"可選靠窗位，適合躲雨休息"],
+ ["民樂生魚片中心","廣安里","food",35.1465,129.1332,0,1,2,"現切生魚片，晚餐選擇"],
+ ["新世界 Centum City 百貨","Centum City","shop",35.1688,129.1306,1,0,2,"大型室內百貨，下雨備案"],
+ ["新世界 Spa Land","Centum City","rest",35.1696,129.1294,1,1,2,"行程中途泡湯休息，適合緊湊後放鬆"],
+ ["西面豬肉湯飯街","西面","food",35.1556,129.0586,1,0,2,"豬肉湯飯集中，回程前也方便"],
+ ["西面地下街與商圈","西面","shop",35.1579,129.0595,1,0,1,"室內購物，下雨備案"]
+].map(function(a,i){return {id:"d"+i,name:a[0],area:a[1],cat:a[2],lat:a[3],lng:a[4],indoor:!!a[5],pinned:false,pri:a[7],hl:a[8],src:"demo",on:true};});}
+
+function myPlaces(){return [
+ ["Doko - Dosi Nongga Cafe", "西面", "cafe", 4.3, 434, "咖啡店 ₩10,000-20,000", 35.15234, 129.06033],
+ ["李在模披薩 西面田浦店", "西面", "food", 4.6, 45, "意式薄餅 ₩10,000-20,000", 35.15524, 129.06498],
+ ["李在模披薩 本店", "南浦·札嘎其", "food", 4.4, 4495, "意式薄餅 ₩10,000-20,000", 35.10211, 129.03061],
+ ["李在模披薩 西面中央店", "西面", "food", 4.1, 60, "意式薄餅 ₩10,000-20,000", 35.15446, 129.0587],
+ ["Momos Coffee - Domoheon", "廣安里", "cafe", 4.5, 81, "咖啡店 ₩1-10,000", 35.14706, 129.10739],
+ ["Momos Coffee - Marine City", "海雲台", "cafe", 4.6, 315, "咖啡店 ₩10,000-20,000", 35.15449, 129.14433],
+ ["Momos Coffee - Roastery & Coffee bar", "南浦·札嘎其", "cafe", 4.5, 1060, "咖啡店 ₩10,000-20,000", 35.09611, 129.04255],
+ ["Momos Coffee - Flagship Store", "東萊·金井", "cafe", 4.4, 2672, "咖啡店 ₩10,000-20,000", 35.21931, 129.08642],
+ ["公人主", "西面", "food", 4.8, 83, "韓式烤肉 ₩20,000-30,000", 35.15686, 129.06152],
+ ["Lasoop Rosters&Bakery (라숲)", "西面", "cafe", 4.7, 78, "咖啡店 ₩10,000-20,000", 35.15719, 129.06214],
+ ["Diart", "西面", "cafe", 4.6, 35, "咖啡店 ₩10,000-20,000", 35.15489, 129.06733],
+ ["DIART coffee", "青沙浦·松亭", "cafe", 4.4, 596, "咖啡店 ₩10,000-20,000", 35.16074, 129.19189],
+ ["PURADAK炸雞 西面田浦店", "西面", "food", 4.0, 112, "烤雞 ₩20,000-30,000", 35.15166, 129.06255],
+ ["PURADAK CHICKEN", "海雲台", "food", 4.7, 257, "炸雞 ₩20,000-30,000", 35.16496, 129.16939],
+ ["廣安裏海灘", "廣安里", "sight", 4.7, 1752, "沙灘", 35.15316, 129.11867],
+ ["札嘎其市場", "南浦·札嘎其", "shop", 4.0, 27515, "海鮮市場", 35.09664, 129.0308],
+ ["Grandis Hotel Munhyeon, Busan", "文峴·大淵", "stay", 4.8, 17, "酒店", 35.13754, 129.0667],
+ ["Seomyeon Station", "西面", "stay", 4.7, 6, "公車站", 35.15731, 129.05948],
+ ["circlestay", "釜山站", "stay", 5.0, 8, "民宿", 35.11581, 129.03858],
+ ["釜山中央安凡尼酒店", "西面", "stay", 4.4, 963, "4 星級飯店", 35.14876, 129.06527],
+ ["Urbanstay Seomyeon", "西面", "stay", 4.1, 388, "4 星級飯店", 35.15934, 129.06095]
+,
+ ["SCENTICA Gwangan", "廣安里", "shop", 5.0, 4905, "朋友行程 · 香氛體驗店", 35.15631, 129.11545],
+ ["workingholiday busan", "廣安里", "cafe", 4.9, 3368, "朋友行程 · 早午餐咖啡", 35.15476, 129.11973],
+ ["廣安木 Gwanganmok", "廣安里", "food", 4.7, 375, "朋友行程 · 烤肉，行程寫米酒奶昔（請確認是同一間）", 35.15499, 129.11845],
+ ["荒嶺山烽燧臺", "西面", "night", 4.7, 3961, "朋友行程 · 山頂展望台，看夕陽夜景", 35.15711, 129.08208],
+ ["自然島鹽麵包", "海雲台", "cafe", 4.5, 617, "朋友行程 · 9:00 開，要提早排隊", 35.16034, 129.17067],
+ ["Skyline Luge Busan", "機張", "sight", 4.6, 4055, "朋友行程 · 斜坡滑車，15:30 前要到，釜山 Pass 可用", 35.19406, 129.21864],
+ ["Sky Capsule 天空膠囊", "青沙浦·松亭", "sight", 4.2, 63, "朋友行程 · 青沙浦到尾浦約 30 分鐘", 35.16131, 129.19158],
+ ["Lotte Premium Outlets 東釜山店", "機張", "shop", 4.2, 10985, "朋友行程 · 離斜坡滑車步行約 15 分鐘", 35.19166, 129.21373],
+ ["IQOS STORE 釜山 Centum", "Centum City", "shop", 4.5, 239, "朋友行程", 35.17029, 129.13239],
+ ["SPA LAND Centum City", "Centum City", "rest", 4.4, 5238, "朋友行程 · 汗蒸幕，最後入場 22:00，在新世界百貨內", 35.16824, 129.12952],
+ ["CORALANI", "機張", "cafe", 4.2, 1200, "朋友行程 · 咖啡廳 10:00 到 22:00", 35.18241, 129.20889],
+ ["味贊王鹽烤肉 海雲台店", "海雲台", "food", 4.4, 1290, "朋友行程 · 鹽烤肉", 35.16109, 129.15905],
+ ["BIFF 廣場", "南浦·札嘎其", "food", 4.1, 20281, "朋友行程 · 街邊小吃、黑糖餅", 35.09824, 129.0292],
+ ["廣安大橋", "廣安里", "night", 4.6, 991, "朋友行程 · 看夕陽、夜景", 35.14756, 129.1302],
+ ["哲秀與英熙 甘川韓服租借", "甘川·松島", "sight", 4.8, 429, "朋友行程 · 韓服租借，約 9 點開", 35.09731, 129.01023],
+ ["Busan Bada Sand", "海雲台", "cafe", 4.1, 225, "朋友行程 · 伴手禮餅乾，約 19 點前", 35.16426, 129.15777],
+ ["Millac The Market", "廣安里", "shop", 4.2, 1288, "朋友行程 · 市集", 35.15419, 129.12705],
+ ["ARTE MUSEUM Busan", "影島", "sight", 4.8, 3072, "朋友行程 · 光影展覽，約 10 到 20 點", 35.08706, 129.07636],
+ ["白淺灘文化村", "影島", "sight", 4.4, 9152, "朋友行程 · 海邊拍照", 35.07829, 129.04533],
+ ["THRILL ON THE MUG!", "影島", "cafe", 4.4, 498, "朋友行程 · 咖啡廳看夕陽", 35.06011, 129.07155],
+ ["影島海女村", "影島", "food", 3.6, 308, "朋友行程 · 海鮮麵，評價兩極，待定", 35.06724, 129.06608],
+ ["Haerang Studio 西面", "西面", "shop", 5.0, 117, "朋友行程 · 拍照，10:15 預約", 35.15499, 129.06211],
+ ["田浦咖啡街", "西面", "cafe", 4.2, 2051, "朋友行程 · 咖啡街加小店", 35.15539, 129.06733],
+ ["西面地下街", "西面", "shop", 4.1, 2958, "朋友行程 · 室內逛街", 35.15629, 129.05914],
+ ["PIC DOT 西面", "西面", "shop", 5.0, 2, "朋友行程 · 評論很少，只有 2 則", 35.15581, 129.06005],
+ ["HASH TABLE", "西面", "food", 4.6, 347, "朋友行程 · 早午餐", 35.15769, 129.06773],
+ ["甘川文化村手翻書", "甘川·松島", "sight", 4.3, 148, "朋友行程 · 手翻書，10:00 開，提早到免排隊", 35.09874, 129.00973],
+ ["新世界百貨 Centum City", "Centum City", "shop", 4.6, 2892, "朋友行程 · 大型百貨，下雨備案", 35.16891, 129.12964],
+ ["花肉家 田浦店", "西面", "food", 4.9, 1003, "朋友行程 · 韓牛，12:00 開", 35.15489, 129.06464],
+ ["Nasari 食堂 廣安", "廣安里", "food", 4.3, 268, "朋友行程 · 海鮮刀削麵", 35.15544, 129.12192],
+ ["Handasot 한다솥", "廣安里", "food", 4.2, 266, "朋友行程 · 釜飯，在廣安海邊", 35.15249, 129.11689],
+ ["廣安里稻草烤肋排 고짚", "廣安里", "food", 4.9, 1077, "朋友行程 · 稻草烤肋排", 35.15134, 129.11548],
+ ["草梁小麥麵", "釜山站", "food", 3.9, 4393, "朋友行程 · 水冷麵", 35.11736, 129.04061],
+ ["水邊最高豬肉湯飯 廣安", "廣安里", "food", 4.2, 153, "朋友行程 · 豬肉湯飯", 35.15474, 129.11902],
+ ["釜山遊艇 The Bay", "海雲台", "sight", 5.0, 2, "朋友行程 · 也許可以排，評論很少", 35.16046, 129.14058],
+ ["국제장여관 Kukjejang", "西面", "stay", 4.9, 37, "旅館 · 復古風，Jacuzzi 要預約", 35.16119, 129.0573],
+ ["ilshin myungpoom hanwoo", "南浦·札嘎其", "food", 4.8, 85, "共享清單 · 韓牛燒烤 ₩40,000-50,000", 35.10191, 129.02564],
+ ["Ha:nok", "機張", "cafe", 4.4, 336, "共享清單 · 咖啡店", 35.21729, 129.19970],
+ ["93 Dongcheon-ro（地址標記）", "西面", "other", 0, 0, "共享清單 · 只標了地址，不確定是什麼店，請自行確認", 35.15714, 129.06208],
+ ["Corduroy fellaz", "廣安里", "night", 5.0, 86, "共享清單 · 雞尾酒酒吧", 35.15711, 129.12583],
+ ["Franklin Coffee Roasters", "西面", "cafe", 4.8, 114, "共享清單 · 咖啡店", 35.15294, 129.06827],
+ ["해운대명품호떡（海雲台糖餅）", "海雲台", "food", 4.1, 421, "共享清單 · 糖餅小吃", 35.16221, 129.16314],
+ ["老虎冰淇淋大福", "海雲台", "food", 4.0, 620, "共享清單 · 冰淇淋大福", 35.15849, 129.17120],
+ ["PH4.13（行李店）", "西面", "shop", 0, 0, "共享清單 · 行李店", 35.15306, 129.06820],
+ ["발란사 BALANSA", "西面", "shop", 4.7, 23, "共享清單 · 西部牛仔服飾", 35.15906, 129.06327],
+ ["LUFT & Luft Mansion", "西面", "shop", 5.0, 434, "共享清單 · 時裝店", 35.15516, 129.06473],
+ ["파니에 panier", "西面", "shop", 4.5, 4, "共享清單 · 雜貨舖", 35.15831, 129.06614],
+ ["에떼 오브제", "西面", "shop", 4.9, 14, "共享清單 · 精品店", 35.15321, 129.06830],
+ ["SCENTICA Jeonpo", "西面", "shop", 5.0, 3669, "共享清單 · 香氛店", 35.15466, 129.06448],
+ ["퓨어다 서면", "西面", "shop", 0, 0, "共享清單 · 時裝店", 35.15506, 129.06133],
+ ["SAPPUN", "西面", "shop", 4.9, 237, "共享清單 · 鞋舖", 35.15461, 129.06192],
+ ["AVIVERE Company select shop", "西面", "shop", 4.4, 33, "共享清單 · 雜貨精選店", 35.15464, 129.06261],
+ ["CHAAKAN SHOES", "西面", "shop", 0, 0, "共享清單 · 鞋店（Google 搜尋比對，請確認）", 35.15529, 129.06311],
+ ["키다 kida", "西面", "shop", 0, 0, "共享清單 · Google 搜尋比對，請確認", 35.15304, 129.06805],
+ ["Cor Pasta Bar", "西面", "food", 0, 0, "共享清單 · 義大利麵（Google 搜尋比對，請確認）", 35.15264, 129.06770],
+ ["Liberta", "青沙浦·松亭", "other", 0, 0, "共享清單 · Google 搜尋比對，請確認", 35.16089, 129.19348]
+].map(function(a,i){return {id:"g"+i,name:a[0],area:a[1],cat:a[2],lat:a[6],lng:a[7],indoor:(a[2]==="food"||a[2]==="cafe"||a[2]==="stay"),pinned:true,pri:2,rating:a[3],rc:a[4],hl:(a[3]?"Google "+a[3]+"★（"+a[4]+" 則）· ":"")+a[5],src:"gmaps",on:true};});}
+
+function defaults(){
+  var s={arrive:"11:30",depart:"15:30",hotelArea:"海雲台",hotelName:"",wake:"08:30",home:"22:00",pace:"normal"};
+  return {tab:"plan",day:1,set:s,places:myPlaces().concat(demoPlaces()),plan:{},demo:true};
+}
+var state=null;
+function load(){try{var r=localStorage.getItem(KEY);if(r){var o=JSON.parse(r);if(o&&o.set&&o.places)return o;}}catch(e){}return null;}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(state));}catch(e){}}
+
+/* helpers */
+function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];});}
+function toMin(h){var p=String(h||"0:0").split(":");return (+p[0]||0)*60+(+p[1]||0);}
+function fmt(m){m=Math.max(0,Math.round(m));var h=Math.floor(m/60)%24,mm=m%60;return (h<10?"0":"")+h+":"+(mm<10?"0":"")+mm;}
+function r30(m){return Math.round(m/30)*30;}
+function r5(m){return Math.max(5,Math.round(m/5)*5);}
+function km(a,b){var R=6371,d2r=Math.PI/180,dl=(b[0]-a[0])*d2r,dg=(b[1]-a[1])*d2r;
+  var x=Math.sin(dl/2)*Math.sin(dl/2)+Math.cos(a[0]*d2r)*Math.cos(b[0]*d2r)*Math.sin(dg/2)*Math.sin(dg/2);return 2*R*Math.asin(Math.sqrt(x));}
+function airportT(area){var c=AREAS[area]||AREAS["海雲台"],adj={bus:0,rail:15,taxi:-10}[state.set.transit||"bus"]||0;return Math.max(20,r5(km(AIRPORT,c)*2+25+adj));}
+function travel(a,b){if(!a||!b)return 20;return r5(km(a,b)*3+10);}
+function coordOf(p){if(!p)return null;if(p.lat!=null&&p.lng!=null)return [p.lat,p.lng];return AREAS[p.area]||null;}
+function placeById(id){for(var i=0;i<state.places.length;i++)if(state.places[i].id===id)return state.places[i];return null;}
+function slotItem(sl){if(sl.pid){var p=placeById(sl.pid);if(p)return {name:p.name,area:p.area,hl:p.hl,intro:INTRO[p.name]||p.hl||"",pinned:p.pinned,c:coordOf(p),p:p};}
+  if(sl.c)return {name:sl.c.name,area:sl.c.area,hl:sl.c.hl,cat:sl.c.cat||"",pinned:false,c:AREAS[sl.c.area]||null,ai:true};return null;}
+function hotelC(){return state.set.hotelCoord||AREAS[state.set.hotelArea]||AREAS["海雲台"];}
+function mapsUrl(n){return "https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(n+" 釜山");}
+
+/* plan skeleton */
+function homeMin(d){var m=toMin(dg(d,"home")||"22:00");return m<360?m+1440:m;}
+function homeText(h){return toMin(h||"0:0")<360?"隔天 "+h:h;}
+function dayWindow(d){
+  var s=state.set,arr=toMin(s.arrive),dep=toMin(s.depart),ht=airportT(s.hotelArea),imm=+s.imm||90,start,end;
+  if(d===1){start=arr+imm+(s.direct===false?ht+30:0);end=homeMin(1);}
+  else{start=toMin(dg(d,"wake"))+90;end=homeMin(d);}
+  if(d===3)end=dep-120-ht;
+  return {start:start,end:end,ht:ht};
+}
+function genSlots(d){
+  var w=dayWindow(d),keys=(PACE[dg(d,"pace")]||PACE.normal).slice(),out=[],dl=(state.del&&state.del[d])||[];
+  if(d===3&&keys.indexOf("morning")<0)keys.push("morning");
+  TPL.forEach(function(tp){
+    if(keys.indexOf(tp.k)<0||dl.indexOf(tp.k)>=0)return;
+    var t=tp.t;
+    if(tp.k==="morning"){t=Math.max(600,r30(w.start));if(t>=690)return;}
+    if(tp.k==="lunch"&&d===1&&w.start>t){t=r30(w.start);if(t>=870)return;}
+    if(t<w.start-15||t>w.end-45)return;
+    out.push({k:tp.k,t:t,label:tp.label,hint:tp.hint,pid:null,c:null,st:""});
+  });
+  return out;
+}
+function rebuild(){
+  var np={};
+  for(var d=1;d<=3;d++){
+    var old=state.plan[d]||[],ns=genSlots(d);
+    ns.forEach(function(sl){var o=null;for(var i=0;i<old.length;i++)if(old[i].k===sl.k){o=old[i];break;}
+      if(o){sl.pid=o.pid;sl.c=o.c;sl.st=o.st;sl.why=o.why||"";}});
+    var res=ns.slice();
+    old.forEach(function(o,oi){if(String(o.k).charAt(0)!=="x")return;var at=0,j;
+      for(j=oi-1;j>=0;j--){var ix=-1;res.forEach(function(r,ri){if(r.k===old[j].k)ix=ri;});if(ix>=0){at=ix+1;break;}}
+      res.splice(at,0,o);});
+    np[d]=res;
+  }
+  state.plan=np;
+}
+var OHD={food:[690,1290],cafe:[630,1260],sight:[570,1080],shop:[630,1200],night:[1080,1440],rest:[600,1260],other:[570,1080]};
+var ALLDAY=["廣安裏海灘","廣安大橋","荒嶺山烽燧臺"];
+var OHSEED={"Franklin Coffee Roasters":{"o":610,"c":1080,"off":[],"w":[[[670,1080]],[[610,1080]],[[610,1080]],[[610,1080]],[[610,1080]],[[610,1080]],[[670,1080]]],"est":false},"Doko - Dosi Nongga Cafe":{"o":630,"c":1290,"off":[],"w":[[[720,1290]],[[630,1290]],[[630,1290]],[[630,1290]],[[630,1290]],[[630,1290]],[[720,1290]]],"est":false},"李在模披薩 西面田浦店":{"o":600,"c":1270,"off":[0],"w":[null,[[600,1270]],[[600,1270]],[[600,1270]],[[600,1270]],[[600,1270]],[[600,1270]]],"est":false},"李在模披薩 西面中央店":{"o":600,"c":1270,"off":[0],"w":[null,[[600,1270]],[[600,1270]],[[600,1270]],[[600,1270]],[[600,1270]],[[600,1270]]],"est":false},"Momos Coffee - Domoheon":{"o":600,"c":1080,"off":[1],"w":[[[600,1080]],null,[[600,1080]],[[600,1080]],[[600,1080]],[[600,1080]],[[600,1200]]],"est":false},"Momos Coffee - Marine City":{"o":420,"c":1080,"off":[],"w":[[[420,1080]],[[420,1080]],[[420,1080]],[[420,1080]],[[420,1080]],[[420,1080]],[[420,1080]]],"est":false},"Momos Coffee - Flagship Store":{"o":450,"c":1080,"off":[],"w":[[[450,1080]],[[450,1080]],[[450,1080]],[[450,1080]],[[450,1080]],[[450,1080]],[[450,1080]]],"est":false},"公人主":{"o":1020,"c":1560,"off":[],"w":[[[1020,1560]],[[1020,1560]],[[1020,1560]],[[1020,1560]],[[1020,1560]],[[1020,1620]],[[1020,1620]]],"est":false},"Lasoop Rosters&Bakery (라숲)":{"o":540,"c":1470,"off":[],"w":[[[540,1470]],[[540,1470]],[[540,1470]],[[540,1470]],[[540,1470]],[[540,1470]],[[540,1470]]],"est":false},"Diart":{"o":570,"c":1020,"off":[],"w":[[[570,1020]],[[570,1020]],[[570,1020]],[[570,1020]],[[570,1020]],[[570,1020]],[[570,1020]]],"est":false},"DIART coffee":{"o":570,"c":1020,"off":[],"w":[[[570,1020]],[[570,1020]],[[570,1020]],[[570,1020]],[[570,1020]],[[570,1020]],[[570,1020]]],"est":false},"PURADAK CHICKEN":{"o":960,"c":1380,"off":[],"w":[[[960,1380]],[[960,1380]],[[960,1380]],[[960,1380]],[[960,1380]],[[960,1380]],[[960,1380]]],"est":false},"Skyline Luge Busan":{"o":600,"c":1080,"off":[],"w":[[[600,1080]],[[600,1080]],[[600,1080]],[[600,1080]],[[600,1080]],[[600,1080]],[[600,1080]]],"est":false},"Lotte Premium Outlets 東釜山店":{"o":630,"c":1260,"off":[],"w":[[[630,1260]],[[630,1260]],[[630,1260]],[[630,1260]],[[630,1260]],[[630,1260]],[[630,1260]]],"est":false},"SPA LAND Centum City":{"o":540,"c":1320,"off":[],"w":[[[540,1320]],[[540,1320]],[[540,1320]],[[540,1320]],[[540,1320]],[[540,1320]],[[540,1320]]],"est":false},"新世界百貨 Centum City":{"o":630,"c":1200,"off":[],"w":[[[630,1230]],[[630,1200]],[[630,1200]],[[630,1200]],[[630,1200]],[[630,1230]],[[630,1230]]],"est":false},"ARTE MUSEUM Busan":{"o":600,"c":1200,"off":[],"w":[[[600,1200]],[[600,1200]],[[600,1200]],[[600,1200]],[[600,1200]],[[600,1200]],[[600,1200]]],"est":false},"Millac The Market":{"o":600,"c":1440,"off":[],"w":[[[600,1440]],[[600,1440]],[[600,1440]],[[600,1440]],[[600,1440]],[[600,1440]],[[600,1440]]],"est":false},"CORALANI":{"o":600,"c":1320,"off":[],"w":[[[600,1320]],[[600,1320]],[[600,1320]],[[600,1320]],[[600,1320]],[[600,1320]],[[600,1320]]],"est":false},"味贊王鹽烤肉 海雲台店":{"o":690,"c":1380,"off":[],"w":[[[690,1380]],[[690,1380]],[[690,1380]],[[690,1380]],[[690,1380]],[[690,900]],[[690,1380]]],"est":false},"Busan Bada Sand":{"o":660,"c":1140,"off":[],"w":[[[660,1140]],[[660,1140]],[[660,1140]],[[660,1140]],[[660,1140]],[[660,1140]],[[660,1140]]],"est":false},"THRILL ON THE MUG!":{"o":600,"c":1260,"off":[],"w":[[[600,1260]],[[600,1260]],[[600,1260]],[[600,1260]],[[600,1260]],[[600,1260]],[[600,1260]]],"est":false},"HASH TABLE":{"o":540,"c":1020,"off":[3,4],"w":[[[540,1020]],[[540,1020]],[[540,1020]],null,null,[[540,1020]],[[540,1020]]],"est":false},"花肉家 田浦店":{"o":720,"c":1320,"off":[],"w":[[[720,1320]],[[720,1320]],[[720,1320]],[[720,1320]],[[720,1320]],[[720,1320]],[[720,1350]]],"est":false},"Nasari 食堂 廣安":{"o":600,"c":1320,"off":[],"w":[[[600,1320]],[[600,1320]],[[600,1320]],[[600,1320]],[[600,1320]],[[600,1320]],[[600,1380]]],"est":false},"Handasot 한다솥":{"o":660,"c":1260,"off":[],"w":[[[660,1260]],[[660,1260]],[[660,1260]],[[660,1260]],[[660,1260]],[[660,1260]],[[660,1260]]],"est":false},"草梁小麥麵":{"o":600,"c":1260,"off":[],"w":[[[600,1260]],[[600,1260]],[[600,1260]],[[600,1260]],[[600,1260]],[[600,1260]],[[600,1260]]],"est":false},"Haerang Studio 西面":{"o":600,"c":1140,"off":[],"w":[[[660,1080]],[[600,1140]],[[600,1140]],[[600,1140]],[[600,1140]],[[600,1140]],[[660,1080]]],"est":false},"ilshin myungpoom hanwoo":{"o":660,"c":1290,"off":[0],"w":[null,[[660,900],[960,1290]],[[660,900],[960,1290]],[[660,900],[960,1290]],[[660,900],[960,1290]],[[660,900],[960,1290]],[[660,900],[960,1290]]],"est":false},"Ha:nok":{"o":660,"c":1200,"off":[],"w":[[[660,1260]],[[660,1200]],[[660,1200]],[[660,1200]],[[660,1200]],[[660,1200]],[[660,1260]]],"est":false},"Corduroy fellaz":{"o":1140,"c":1560,"off":[],"w":[[[1140,1560]],[[1140,1560]],[[1140,1560]],[[1140,1560]],[[1140,1560]],[[1140,1620]],[[1140,1620]]],"est":false},"해운대명품호떡（海雲台糖餅）":{"o":720,"c":1380,"off":[3],"w":[[[720,1380]],[[720,1380]],[[720,1380]],null,[[720,1380]],[[720,1380]],[[720,1380]]],"est":false},"PH4.13（行李店）":{"o":750,"c":1140,"off":[0,1],"w":[null,null,[[750,1140]],[[750,1140]],[[750,1140]],[[750,1140]],[[750,1140]]],"est":false},"발란사 BALANSA":{"o":720,"c":1140,"off":[],"w":[[[720,1140]],[[720,1140]],[[720,1140]],[[720,1140]],[[720,1140]],[[720,1140]],[[720,1140]]],"est":false},"LUFT & Luft Mansion":{"o":660,"c":1140,"off":[],"w":[[[660,1140]],[[660,1140]],[[660,1140]],[[660,1140]],[[660,1140]],[[660,1140]],[[660,1140]]],"est":false},"SCENTICA Jeonpo":{"o":660,"c":1260,"off":[],"w":[[[660,1260]],[[660,1260]],[[660,1260]],[[660,1260]],[[660,1260]],[[660,1260]],[[660,1260]]],"est":false},"AVIVERE Company select shop":{"o":660,"c":1380,"off":[],"w":[[[660,1380]],[[660,1380]],[[660,1380]],[[660,1380]],[[660,1380]],[[660,1380]],[[660,1380]]],"est":false},"PURADAK炸雞 西面田浦店":{"o":900,"c":1500,"off":[],"w":[[[720,1500]],[[900,1500]],[[900,1500]],[[900,1500]],[[900,1500]],[[900,1500]],[[720,1500]]],"est":false},"水邊最高豬肉湯飯 廣安":{"o":0,"c":1440,"off":[],"w":[[[0,1440]],[[0,1440]],[[0,1440]],[[0,1440]],[[0,1440]],[[0,1440]],[[0,1440]]],"est":false},"李在模披薩 本店":{"o":600,"c":1230,"off":[0],"w":[null,[[600,1230]],[[600,1230]],[[600,1230]],[[600,1230]],[[600,1230]],[[570,1230]]],"est":false},"Momos Coffee - Roastery & Coffee bar":{"o":480,"c":1080,"off":[],"w":[[[480,1080]],[[480,1080]],[[480,1080]],[[480,1080]],[[480,1080]],[[480,1080]],[[480,1080]]],"est":false},"札嘎其市場":{"o":540,"c":1260,"off":[],"w":[[[540,1260]],[[540,1260]],[[540,1260]],[[540,1260]],[[540,1260]],[[540,1260]],[[540,1260]]],"est":false},"SCENTICA Gwangan":{"o":660,"c":1260,"off":[],"w":[[[660,1260]],[[660,1260]],[[660,1260]],[[660,1260]],[[660,1260]],[[660,1260]],[[660,1260]]],"est":false},"廣安木 Gwanganmok":{"o":720,"c":1410,"off":[],"w":[[[720,900],[990,1440]],[[720,900],[990,1410]],[[720,900],[990,1290]],[[720,900],[990,1410]],[[720,900],[990,1410]],[[720,900],[990,1410]],[[720,900],[990,1440]]],"est":false},"파니에 panier":{"o":720,"c":1200,"off":[],"w":[[[720,1200]],[[720,1200]],[[720,1200]],[[720,1200]],[[720,1200]],[[720,1200]],[[720,1200]]],"est":false},"workingholiday busan":{"o":540,"c":1350,"off":[],"w":[[[540,1350]],[[540,1350]],[[540,1350]],[[540,1350]],[[540,1350]],[[540,1350]],[[540,1350]]],"est":false},"自然島鹽麵包":{"o":540,"c":1320,"off":[],"w":[[[540,1320]],[[540,1320]],[[540,1320]],[[540,1320]],[[540,1320]],[[540,1320]],[[540,1320]]],"est":false},"IQOS STORE 釜山 Centum":{"o":600,"c":1200,"off":[],"w":[[[720,1140]],[[600,1200]],[[600,1200]],[[600,1200]],[[600,1200]],[[600,1200]],[[720,1140]]],"est":false},"BIFF 廣場":{"o":0,"c":1440,"off":[],"w":[[[0,1440]],[[0,1440]],[[0,1440]],[[0,1440]],[[0,1440]],[[0,1440]],[[0,1440]]],"est":false},"PIC DOT 西面":{"o":0,"c":1440,"off":[],"w":[[[0,1440]],[[0,1440]],[[0,1440]],[[0,1440]],[[0,1440]],[[0,1440]],[[0,1440]]],"est":false},"釜山遊艇 The Bay":{"o":540,"c":1380,"off":[],"w":[[[540,1380]],[[540,1380]],[[540,1380]],[[540,1380]],[[540,1380]],[[540,1380]],[[540,1380]]],"est":false},"廣安里稻草烤肋排 고짚":{"o":960,"c":1380,"off":[],"w":[[[720,1380]],[[960,1380]],[[960,1380]],[[960,1380]],[[960,1380]],[[960,1380]],[[720,1380]]],"est":false},"老虎冰淇淋大福":{"o":720,"c":1290,"off":[],"w":[[[720,960],[1050,1290]],[[720,960],[1050,1290]],[[720,960],[1050,1290]],[[720,960],[1050,1290]],[[720,960],[1050,1290]],[[720,960],[1050,1290]],[[720,960],[1050,1290]]],"est":false},"퓨어다 서면":{"o":660,"c":1320,"off":[],"w":[[[660,1320]],[[660,1320]],[[660,1320]],[[660,1320]],[[660,1260]],[[720,1320]],[[660,1320]]],"est":false},"SAPPUN":{"o":720,"c":1320,"off":[],"w":[[[720,1320]],[[720,1320]],[[720,1320]],[[720,1320]],[[720,1320]],[[720,1320]],[[720,1320]]],"est":false},"키다 kida":{"o":720,"c":1200,"off":[],"w":[[[720,1200]],[[720,1200]],[[720,1200]],[[720,1200]],[[720,1200]],[[720,1200]],[[720,1200]]],"est":false},"Cor Pasta Bar":{"o":720,"c":1260,"off":[1],"w":[[[720,870],[1020,1260]],null,[[720,870],[1020,1260]],[[720,870],[1020,1260]],[[720,870],[1020,1260]],[[720,870],[1020,1260]],[[720,870],[1020,1260]]],"est":false},"Liberta":{"o":540,"c":1170,"off":[],"w":[[[540,1170]],[[540,1170]],[[540,1170]],[[540,1170]],[[540,1170]],[[540,1170]],[[540,1170]]],"est":false}};
+function hoursOf(p){if(p.oh&&p.oh.o!=null)return p.oh;if(OHSEED[p.name])return OHSEED[p.name];if(ALLDAY.indexOf(p.name)>=0)return {o:0,c:1440,est:true};var b=OHD[p.cat]||OHD.other;return {o:b[0],c:b[1],est:true};}
+function wdOf(d){var s=state.set.date;if(!s)return -1;var x=new Date(s+"T00:00:00");if(isNaN(x.getTime()))return -1;x.setDate(x.getDate()+d-1);return x.getDay();}
+var WDN=["日","一","二","三","四","五","六"];
+function hoursFor(p,wd){var h=hoursOf(p);if(wd>=0&&h.w){var iv=h.w[wd];if(!iv||!iv.length)return null;return {o:iv[0][0],c:iv[iv.length-1][1],br:iv.length>1?[iv[0][1],iv[1][0]]:null};}
+  if(wd>=0&&h.off&&h.off.indexOf(wd)>=0)return null;return {o:h.o,c:h.c,br:null};}
+function openWarn(p,t,d){var wd=wdOf(d),h=hoursFor(p,wd);if(!h)return "這天（週"+WDN[wd]+"）公休";if(t<h.o-5)return "約 "+fmt(t)+" 還沒開門（"+fmt(h.o)+" 開）";if(h.br&&t>h.br[0]-20&&t<h.br[1])return "約 "+fmt(t)+" 在午休（"+fmt(h.br[0])+"–"+fmt(h.br[1])+"）";if(t>h.c-30)return "約 "+fmt(t)+" 已接近或超過打烊時間（"+fmt(h.c)+" 關）";return "";}
+var INTRO={"Doko - Dosi Nongga Cafe":"田園風咖啡廳，西面逛街空檔坐坐","李在模披薩 西面田浦店":"釜山人氣薄餅連鎖，餅皮薄脆","李在模披薩 本店":"薄餅名店本店，南浦逛街順路吃","李在模披薩 西面中央店":"薄餅連鎖，西面站旁方便","Momos Coffee - Domoheon":"釜山在地烘豆咖啡，廣安里分店","Momos Coffee - Marine City":"在地烘豆咖啡，海景高樓區分店","Momos Coffee - Roastery & Coffee bar":"烘豆工坊兼咖啡吧，可買咖啡豆","Momos Coffee - Flagship Store":"旗艦店，在地人常去的精品咖啡","公人主":"西面夜晚烤肉店，適合晚餐到宵夜","Lasoop Rosters&Bakery (라숲)":"烘豆加麵包店，營業到深夜","Diart":"西面小咖啡廳","DIART coffee":"松亭一帶的咖啡店，早開","PURADAK炸雞 西面田浦店":"韓式烤雞炸雞，適合晚餐配啤酒","PURADAK CHICKEN":"海雲台分店的韓式炸雞","廣安裏海灘":"對著廣安大橋的海灘，夜景是重點","札嘎其市場":"最有名的海鮮市場，可現挑現吃","SCENTICA Gwangan":"香氛體驗店，可做調香","workingholiday busan":"廣安里早午餐咖啡，評價高","廣安木 Gwanganmok":"廣安里烤肉店，午休後晚間再開","荒嶺山烽燧臺":"山頂展望台，看夕陽與市區夜景","自然島鹽麵包":"海雲台排隊鹽麵包，早開要早到","Skyline Luge Busan":"斜坡滑車，機張海邊玩樂（釜山 Pass 可用）","Sky Capsule 天空膠囊":"青沙浦到尾浦的海岸小火車","Lotte Premium Outlets 東釜山店":"海邊的大型 Outlet，可逛一下午","IQOS STORE 釜山 Centum":"電子煙門市，Centum City 內","SPA LAND Centum City":"大型汗蒸幕，新世界百貨內，放鬆首選","CORALANI":"機張海景咖啡廳","味贊王鹽烤肉 海雲台店":"海雲台知名鹽烤肉，晚餐熱門","BIFF 廣場":"南浦街邊小吃，黑糖餅、魚板必吃","廣安大橋":"看夕陽與夜景的地標","哲秀與英熙 甘川韓服租借":"甘川文化村租韓服拍照","Busan Bada Sand":"海雲台伴手禮餅乾店","Millac The Market":"廣安里河邊的市集式商場","ARTE MUSEUM Busan":"影島的光影藝術展，適合拍照","白淺灘文化村":"影島海邊的村落，景色好拍照","THRILL ON THE MUG!":"影島海邊咖啡廳，適合看夕陽","影島海女村":"海女現撈海鮮，評價兩極","Haerang Studio 西面":"西面拍照攝影棚，需預約","田浦咖啡街":"小咖啡館與小店集中的街區","西面地下街":"室內地下街，下雨天逛街好去處","PIC DOT 西面":"自助拍貼館，評論少","HASH TABLE":"西面早午餐，週三四公休","甘川文化村手翻書":"甘川的手翻書體驗，早到免排隊","新世界百貨 Centum City":"世界最大百貨之一，下雨備案","花肉家 田浦店":"韓牛燒肉，中午就開","Nasari 食堂 廣安":"海鮮刀削麵，廣安里食堂","Handasot 한다솥":"海景釜飯，在廣安海邊","廣安里稻草烤肋排 고짚":"稻草香氣烤肋排，晚餐為主","草梁小麥麵":"釜山站旁水冷麵，當地口味","水邊最高豬肉湯飯":"釜山招牌豬肉湯飯，24 小時營業","釜山遊艇 The Bay":"海雲台夜景遊艇，看燈光秀","ilshin myungpoom hanwoo":"南浦韓牛燒烤，午晚分時段","Ha:nok":"機張的咖啡店","Corduroy fellaz":"廣安里雞尾酒吧，晚上才開","Franklin Coffee Roasters":"西面精品咖啡烘焙店","해운대명품호떡（海雲台糖餅）":"海雲台市場糖餅小吃","老虎冰淇淋大福":"海雲台冰淇淋大福，午間休息","PH4.13（行李店）":"行李箱專賣店","발란사 BALANSA":"精品選物服飾店","LUFT & Luft Mansion":"西面時裝選品店","파니에 panier":"雜貨小舖","에떼 오브제":"西面精品店","SCENTICA Jeonpo":"田浦分店的香氛店","퓨어다 서면":"西面時裝店","SAPPUN":"西面鞋舖","AVIVERE Company select shop":"雜貨選物店","CHAAKAN SHOES":"鞋店，位置待確認","키다 kida":"西面小店，位置待確認","Cor Pasta Bar":"西面義大利麵，午晚分時段，週一休","Liberta":"松亭一帶，位置待確認"};
+OHSEED["釜田市場"]={o:360,c:1140,off:[],w:[[[360,1140]],[[360,1140]],[[360,1140]],[[360,1140]],[[360,1140]],[[360,1140]],[[360,1140]]],est:false};INTRO["釜田市場"]="熱鬧的室內外傳統市場，賣水果、蔬菜、海鮮與肉品，離釜田站近，可走到西面";
+OHSEED["釜山西面郵局"]={o:540,c:1080,off:[0,6],w:[null,[[540,720],[780,1080]],[[540,720],[780,1080]],[[540,720],[780,1080]],[[540,720],[780,1080]],[[540,720],[780,1080]],null],est:false};INTRO["釜山西面郵局"]="西面站附近的郵局，要寄明信片可順路來，平日午休 12–13 點，週末休息";
+OHSEED["釜山市民公園"]={o:300,c:1440,off:[],w:[[[300,1440]],[[300,1440]],[[300,1440]],[[300,1440]],[[300,1440]],[[300,1440]],[[300,1440]]],est:false};INTRO["釜山市民公園"]="曾是美軍基地的大型城市公園，有步道、遊戲場與音樂噴泉，狗狗友善";
+OHSEED["Smugogae"]={o:690,c:1290,off:[],w:[[[690,1290]],[[690,900],[1020,1290]],[[690,900],[1020,1290]],[[690,900],[1020,1290]],[[690,900],[1020,1290]],[[690,900],[1020,1290]],[[690,1290]]],est:false};INTRO["Smugogae"]="海雲台人氣韓牛料理，從傳統烤肉到創意 Omakase，用多種方式吃韓牛；平日午休 15–17 點";
+var DET=[];
+var DET2=[];
+var DET3=[];
+var DET5=[];
+var DET4=[];
+var NOHRS=["影島海女村","Sky Capsule 天空膠囊","CHAAKAN SHOES","93 Dongcheon-ro（地址標記）","에떼 오브제"];
+function hrsText(p){var h=hoursOf(p);var tail=h.est?(NOHRS.indexOf(p.name)>=0?"（Google 沒有營業時間資料，此為預估）":"（預估）"):"";
+  if(h.w){var g=[],ord=[1,2,3,4,5,6,0];ord.forEach(function(d){var iv=h.w[d],k=iv&&iv.length?iv.map(function(x){return fmt(x[0])+"–"+fmt(x[1]);}).join(" / "):"公休";var l=g[g.length-1];if(l&&l.k===k)l.e=d;else g.push({k:k,s:d,e:d});});
+    if(g.length===1)return "營業 每天 "+g[0].k;return "營業 "+g.map(function(x){return "週"+WDN[x.s]+(x.e!==x.s?"–"+WDN[x.e]:"")+" "+x.k;}).join("；");}
+  if(h.o===0&&h.c>=1440&&!(h.off&&h.off.length))return "全天開放";
+  return "營業 "+fmt(h.o)+"–"+fmt(h.c)+(h.off&&h.off.length?"，週"+WDN[h.off[0]]+"公休":"")+tail;}
+function ohEditor(p){var h=hoursOf(p),ov=(h.off&&h.off.length)?h.off[0]:"";
+  return '<details class="oh"><summary>'+esc(hrsText(p))+' · 修改</summary><div class="grid2" style="margin-top:6px"><label class="f">開門<input type="time" data-oh="o" data-id="'+esc(p.id)+'" value="'+fmt(h.o)+'"></label><label class="f">打烊<input type="time" data-oh="c" data-id="'+esc(p.id)+'" value="'+fmt(h.c)+'"></label></div>'
+   +'<label class="f" style="margin-top:6px">公休日<select data-oh="off" data-id="'+esc(p.id)+'"><option value="">沒有</option>'+WDN.map(function(w,i){return '<option value="'+i+'"'+(String(ov)===String(i)?" selected":"")+'>每週'+w+'</option>';}).join("")+'</select></label>'
+   +'<div class="hint">請到 Google 地圖確認實際時間後在這裡改，行程會依此避開沒開的時段。</div></details>';}
+var DUR={food:70,cafe:55,sight:90,shop:80,night:75,rest:60,other:80};
+var MINT={lunch:690,dinner:1050,night:1140,late:1260};
+function slotDur(s,it){var c=it&&it.p?it.p.cat:(s.hint==="food"?"food":(s.hint==="cafe"?"cafe":(s.hint==="night"?"night":"sight")));return DUR[c]||80;}
+function reflow(d){
+  var sl=state.plan[d]||[],w=dayWindow(d),cur=w.start,anc=startC(d);
+  sl.forEach(function(s){
+    if(s.st){s.t=Math.round(cur/5)*5;s.warn="";return;}
+    var it=slotItem(s),tv=15;
+    if(it&&it.c){tv=travel(anc,it.c);anc=it.c;}
+    var t0=cur+tv,mt=MINT[s.k]||0;
+    if(s.hint==="night")mt=Math.max(mt,1140);
+    if(s.hint==="food")mt=Math.max(mt,660);
+    if(s.hint==="cafe")mt=Math.max(mt,600);
+    t0=Math.max(t0,mt);
+    if(it&&it.p&&s.fix==null){var hh=hoursFor(it.p,wdOf(d));if(hh){if(t0<hh.o&&hh.o-t0<=120)t0=hh.o;if(hh.br&&t0>hh.br[0]-20&&t0<hh.br[1]&&hh.br[1]-t0<=90)t0=hh.br[1];}}
+    s.t=Math.round(t0/5)*5;if(s.fix!=null)s.t=s.fix;
+    var du=slotDur(s,it);cur=s.t+du;s.over=(s.t+du>w.end+10);
+    s.warn=(it&&it.p)?openWarn(it.p,s.t,d):"";
+  });
+}
+function reflowAll(){for(var d=1;d<=3;d++)reflow(d);}
+function usedIds(){var u={};for(var d in state.plan)state.plan[d].forEach(function(s){if(s.pid)u[s.pid]=1;});return u;}
+function anchorFor(d,idx){var sl=state.plan[d];for(var j=idx-1;j>=0;j--){if(sl[j].st)continue;var it=slotItem(sl[j]);if(it&&it.c)return {c:it.c,name:it.name};}if(d===1&&state.set.direct!==false)return {c:AIRPORT,name:"機場"};return {c:hotelC(),name:"飯店"};}
+
+/* suggestions */
+function moodOk(m,p){
+  if(p.cat==="stay")return false;
+  if(m==="eat")return p.cat==="food";
+  if(m==="cafe")return p.cat==="cafe"||p.cat==="rest";
+  if(m==="sight")return p.cat==="sight";
+  if(m==="shop")return p.cat==="shop";
+  if(m==="night")return p.cat==="night";
+  if(m==="rain")return !!p.indoor;
+  return true;
+}
+function options(d,idx,mood,offset,all){
+  var sl=state.plan[d][idx],an=anchorFor(d,idx),used=usedIds();
+  var list=state.places.filter(function(p){return p.on&&!used[p.id]&&moodOk(mood,p);}).map(function(p){
+    var tv=travel(an.c,coordOf(p));
+    var sc=(p.pinned?3:0)+(p.pri||1)-tv/12+(p.cat===sl.hint?1:0)+(p.rating?(p.rating-4)*1.5+Math.min(Math.log10(p.rc||1),4)*0.25:0);
+    var wn=openWarn(p,sl.t,sheet?sheet.d:d);return {p:p,tv:tv,sc:sc-(wn?6:0),an:an.name,wn:wn};
+  }).sort(function(a,b){return b.sc-a.sc;});
+  if(all)return list;
+  if(!list.length)return [];
+  var n=list.length,out=[];
+  for(var i=0;i<Math.min(3,n);i++)out.push(list[(offset+i)%n]);
+  if(!out.some(function(o){return !o.p.pinned;})){
+    var extra=list.filter(function(o){return !o.p.pinned&&out.indexOf(o)<0;})[0];
+    if(extra&&out.length)out[out.length-1]=extra;
+  }
+  return out;
+}
+
+/* views */
+var sheet=null; /* {d,i,mood,offset,ai,busy,err,custom} */
+var busy={ai:false,cls:false};
+var sampleFn=null,msgImport="";
+
+function showErr(err){try{console.error(err);}catch(e){}
+  var a=document.getElementById("app");if(a)a.innerHTML='<div class="panel" style="margin:16px"><h2>這個畫面出了點問題</h2><p class="hint">錯誤訊息：'+esc(err&&err.message||String(err))+'</p><div class="row"><button class="btn" data-act="resetplan">清掉行程重新排</button><button class="btn ghost" data-act="reload">重新整理畫面</button></div><p class="hint">不會刪掉你的口袋名單。</p></div>';}
+function render(){try{reflowAll();render0();if(state.tab==="map")initMV();}catch(err){showErr(err);}}
+function render0(){
+  var tabs=[["plan","行程"],["map","地圖"],["places","我的清單"]];
+  var h='<nav class="tabs" role="tablist">'+tabs.map(function(t){return '<button role="tab" data-act="tab" data-v="'+t[0]+'" aria-selected="'+(state.tab===t[0])+'">'+t[1]+'</button>';}).join("")+'</nav>';
+  if(state.tab==="plan")h+=viewPlan();else if(state.tab==="map")h+=viewMap();else h+=viewPlaces();
+  var demoNote=false?'<div class="demo">你在 Google 地圖「釜山」清單的 '+state.places.filter(function(p){return p.pinned&&p.src!=="demo"&&p.cat!=="stay";}).length+' 間店已匯入，包含朋友行程提到的店（部分位置來自 Google 座標，部分區域是推測，可在口袋名單修改）。標示「補充推薦」的是我預先放的示意店家，介紹未經查證，不需要的話到「口袋名單」按「清除示範資料」。</div>':"";
+  document.getElementById("app").innerHTML=demoNote+h;
+  renderSheet();
+}
+
+function dayLine(d){
+  var s=state.set,w=dayWindow(d),hm=dg(d,"home"),wk=dg(d,"wake"),arr=toMin(s.arrive),imm=+s.imm||90;
+  if(d===1&&s.direct!==false)return "約 "+fmt(arr)+" 抵達，約 "+fmt(arr+imm)+" 領完行李、交給運送服務，直接從機場出發，約 "+homeText(hm)+" 前回飯店";
+  if(d===1)return "約 "+fmt(arr)+" 抵達，約 "+fmt(arr+imm+w.ht+30)+" 到飯店放行李後出發，約 "+homeText(hm)+" 前回飯店";
+  if(d===2)return "起床 "+wk+"，約 "+fmt(toMin(wk)+90)+" 出門，約 "+homeText(hm)+" 回飯店";
+  return "起床 "+wk+"，約 "+fmt(w.end)+" 前從飯店出發去機場，"+s.depart+" 起飛";
+}
+function dayRoute(d){
+  var sl=state.plan[d]||[],cur=(d===1&&state.set.direct!==false)?AIRPORT:hotelC(),tot=0,names=[];
+  sl.forEach(function(s){if(s.st)return;var it=slotItem(s);if(!it)return;tot+=travel(cur,it.c);if(it.c)cur=it.c;names.push(it.area||it.name);});
+  if(!names.length)return "";
+  tot+=travel(cur,hotelC());
+  var seq=[(d===1&&state.set.direct!==false)?"機場":state.set.hotelArea].concat(names).concat([state.set.hotelArea]).filter(function(x,i,a){return i===0||x!==a[i-1];});
+  return seq.join(" → ")+"，移動合計約 "+tot+" 分鐘";
+}
+var FRIEND=[{"t": "Day 1 · 廣安里", "n": ["workingholiday busan", "SCENTICA Gwangan", "廣安木 Gwanganmok", "荒嶺山烽燧臺"], "x": ["換錢（西面或海雲台）"]}, {"t": "Day 2 · 機張＋海雲台", "n": ["自然島鹽麵包", "Skyline Luge Busan", "Sky Capsule 天空膠囊", "Lotte Premium Outlets 東釜山店", "IQOS STORE 釜山 Centum", "SPA LAND Centum City", "DIART coffee", "CORALANI", "味贊王鹽烤肉 海雲台店"], "x": []}, {"t": "Day 3 · 甘川＋南浦", "n": ["哲秀與英熙 甘川韓服租借", "BIFF 廣場"], "x": ["南浦洞逛街"]}, {"t": "Day 4 · 廣安里", "n": ["廣安大橋", "Busan Bada Sand", "Millac The Market"], "x": []}, {"t": "Day 5 · 影島＋南浦", "n": ["ARTE MUSEUM Busan", "影島海女村", "白淺灘文化村", "THRILL ON THE MUG!", "BIFF 廣場"], "x": ["CAFE B-BLACK（Google 上找不到同名）"]}, {"t": "Day 6 · 西面", "n": ["Haerang Studio 西面", "田浦咖啡街", "西面地下街", "PIC DOT 西面", "PURADAK炸雞 西面田浦店"], "x": ["old花園 12:30 預約（Google 上找不到同名）"]}, {"t": "Day 7 · 西面", "n": ["HASH TABLE"], "x": []}, {"t": "也許可以排", "n": ["釜山遊艇 The Bay", "甘川文化村手翻書", "新世界百貨 Centum City", "花肉家 田浦店", "Nasari 食堂 廣安", "Handasot 한다솥", "廣安里稻草烤肋排 고짚", "草梁小麥麵", "水邊最高豬肉湯飯 廣安"], "x": ["烤肉男子（要用 App 預約）", "元祖黑糖餅"]}];
+var FG={};FRIEND.forEach(function(f,i){f.n.forEach(function(n){if(FG[n]==null)FG[n]=i;});});
+function fgOf(p){var v=FG[p.name];return v==null?-1:v;}
+function placeByName(n){for(var i=0;i<state.places.length;i++)if(state.places[i].name===n)return state.places[i];return null;}
+var KLAB={food:"用餐",cafe:"咖啡",sight:"景點",shop:"逛街",night:"夜景",rest:"放鬆",other:"景點"};
+function friendLegs(fi){var it=FRIEND[fi].n.map(placeByName).filter(Boolean),tot=0,mx=0,prev=null;it.forEach(function(p){var c=coordOf(p);if(prev&&c){var t=travel(prev,c);tot+=t;mx=Math.max(mx,t);}prev=c;});return {items:it,tot:tot,mx:mx};}
+function applyFriend(fi,d){
+  var f=friendLegs(fi),it=f.items;if(!it.length){toast("這天的地點都不在清單裡");return;}
+  var t0=Math.max(600,r30(dayWindow(d).start)),n=it.length,gap=Math.min(100,n>1?Math.floor((1350-t0)/(n-1)):100),slots=[];
+  it.forEach(function(p,i){slots.push({k:"x"+Date.now()+i,t:Math.min(1380,t0+i*gap),label:KLAB[p.cat]||"景點",hint:p.cat==="food"?"food":(p.cat==="cafe"?"cafe":(p.cat==="night"?"night":"sight")),pid:p.id,c:null,st:"",why:"朋友行程 · "+FRIEND[fi].t});});
+  state.plan[d]=slots;state.del=state.del||{};state.del[d]=["morning","lunch","afternoon","cafe","dinner","night"];state.zone=state.zone||{};state.zone[d]=it[0].area;
+  save();toast("已套用到 Day "+d);render();}
+function friendHtml(){
+  var h='<div class="panel"><div class="row" style="justify-content:space-between"><h2>朋友的行程</h2><button class="sw" data-act="fotoggle">'+(state.fo?"收起":"展開")+'</button></div><p class="hint">朋友排的 7 天，地點都已存進你的 Google 地圖。挑一天套到你的 Day 1 到 3，之後還能改。</p>';
+  if(state.fo)FRIEND.forEach(function(fr,fi){
+    var f=friendLegs(fi);
+    h+='<div class="lg" style="flex-direction:column;align-items:stretch;gap:6px"><b>'+esc(fr.t)+'</b><div class="hint">'+f.items.map(function(p){return esc(p.name);}).join(" → ")+'</div>'
+      +(f.items.length>1?'<div class="hint">直線估算移動約 '+f.tot+' 分鐘'+(f.mx>30?'，其中最長一段約 '+f.mx+' 分鐘，偏遠':'')+'</div>':"")
+      +(fr.x&&fr.x.length?'<div class="hint">沒放進去：'+fr.x.map(esc).join("、")+'</div>':"")
+      +'<div class="row">'+[1,2,3].map(function(n){return '<button class="sw" data-act="fapply" data-fi="'+fi+'" data-d="'+n+'">套到 Day '+n+'</button>';}).join("")+'</div></div>';});
+  return h+'</div>';}
+
+var DAYMAX={relaxed:4,normal:5,packed:7};
+async function aiDay(d){
+  if(busy.day)return;
+  if(!sampleFn){toast("AI 目前連不上，請稍後再試");return;}
+  var st=dayStops(d),used=usedIds(),rows=[],ids={},cand=[];
+  st.forEach(function(x){if(x.it.p){ids[x.it.p.id]=1;}});
+  var base=st.length?st.map(function(x){return x.it.c;}):[hotelC()];
+  state.places.forEach(function(p){if(!p.on||p.cat==="stay"||ids[p.id]||used[p.id]&&!ids[p.id])return;if(p.lat==null&&p.area==="待分類")return;var c=coordOf(p);if(!c)return;
+    var m=999;base.forEach(function(b){m=Math.min(m,travel(b,c));});if(m<=16)cand.push({p:p,sc:(p.pinned?3:0)+quality(p)-m/10});});
+  cand.sort(function(a,b){return b.sc-a.sc;});cand=cand.slice(0,12);
+  function row(p,tag){var c=coordOf(p);return p.id+"｜"+p.name+"｜"+(CATS[p.cat]||p.cat)+"｜"+p.area+"｜"+c[0].toFixed(4)+","+c[1].toFixed(4)+"｜"+(p.rating?p.rating+"★":"無評分")+"｜"+hrsText(p)+"｜"+tag;}
+  st.forEach(function(x){if(x.it.p)rows.push(row(x.it.p,"目前已排"));});
+  cand.forEach(function(o){rows.push(row(o.p,o.p.pinned?"可替換（我的釘選）":"可替換"));ids[o.p.id]=1;});
+  if(!rows.length){toast("這天沒有可以整理的地點");return;}
+  var pace=dg(d,"pace"),mx=DAYMAX[pace]||5,w=dayWindow(d);
+  busy.day=d;render();
+  var prompt="旅客在釜山，這是第 "+d+" 天。起點："+(d===1&&state.set.direct!==false?"金海機場，"+fmt(w.start)+" 開始玩":"飯店（"+state.set.hotelArea+"）"+fmt(w.start)+" 出門")+"，最晚 "+(d===3?fmt(w.end):homeText(dg(d,"home")))+" 前要回飯店"+(d===3?"（之後去機場）":"")+"。今天步調：「"+PACE_LABEL[pace]+"」，請安排 "+Math.max(2,mx-1)+" 到 "+mx+" 站。\n"
+   +"規則：全部站盡量在同一區、順路不折返；午餐約 12 點、晚餐約 18 點，夜景放最後；一天站數不要超過上限；每一站的到達時間必須落在營業時間內、避開公休；可以把目前已排的換掉，但只能使用下列清單裡的 id。\n"
+   +"清單（id｜店名｜類型｜區域｜座標｜評分｜營業時間｜狀態）：\n"+rows.join("\n")
+   +'\n只回 JSON：{"order":["id1","id2",...],"note":"一句話說明這樣排的理由與換掉了什麼"}。order 是依照遊玩先後順序排好的 id。';
+  try{
+    var r=await sampleFn.json(prompt,{cache:false}),ord=(r&&Array.isArray(r.order)?r.order:[]).filter(function(x,i,a){return ids[x]&&a.indexOf(x)===i;}).slice(0,mx);
+    if(!ord.length)throw new Error("AI 沒有給出可用的順序");
+    var old=state.plan[d]||[],ns=[];
+    ord.forEach(function(id,k){var p=placeById(id);if(!p)return;var ex=null;old.forEach(function(s){if(s.pid===id)ex=s;});
+      var hint=p.cat==="food"?"food":(p.cat==="cafe"?"cafe":(p.cat==="night"?"night":"sight"));
+      ns.push({k:"x"+Date.now()+k,t:0,label:KLAB[p.cat]||"景點",hint:hint,pid:id,c:null,st:"",why:"AI 整理"+(ex?"":" · 新加入")});});
+    state.plan[d]=ns;state.del=state.del||{};state.del[d]=["morning","lunch","afternoon","cafe","dinner","night","late"];
+    var ar={};ns.forEach(function(s){var p=placeById(s.pid);if(p)ar[p.area]=(ar[p.area]||0)+1;});var top=Object.keys(ar).sort(function(a,b){return ar[b]-ar[a];})[0];state.zone=state.zone||{};if(top)state.zone[d]=top;
+    state.aiNote=state.aiNote||{};state.aiNote[d]=String(r.note||"").slice(0,120);
+    save();toast("已重新整理 Day "+d);
+  }catch(e){toast((e&&e.message)||"AI 沒有回應");}
+  busy.day=0;render();
+}
+function advicePanel(){
+  var filled=0;for(var d0=1;d0<=3;d0++)filled+=dayStops(d0).length;if(!filled)return "";
+  var ps=state.places.filter(function(p){return p.on&&p.pinned&&p.cat!=="stay"&&!(p.lat==null&&p.area==="待分類")&&coordOf(p);});
+  var cl=[];Object.keys(AREAS).forEach(function(n){var c=AREAS[n],k=0;ps.forEach(function(p){if(travel(c,coordOf(p))<=16)k++;});cl.push({n:n,c:c,k:k});});
+  cl.sort(function(a,b){return b.k-a.k;});
+  var pick=[];cl.forEach(function(x){if(pick.length<3&&x.k>0&&pick.every(function(y){return km(y.c,x.c)>=3;}))pick.push(x);});
+  var out=[];
+  if(pick.length)out.push("你的釘選主要集中在："+pick.map(function(x){return x.n+"一帶 "+x.k+" 間";}).join("、")+"。建議一天專心走其中一區，其他區留給另一天。");
+  [1,2,3].forEach(function(d){var st=dayStops(d);if(st.length<2)return;var mx=0,i;for(i=1;i<st.length;i++){mx=Math.max(mx,travel(st[i-1].it.c,st[i].it.c));}
+    var ar={};st.forEach(function(x){var a=x.it.area||"其他";ar[a]=(ar[a]||0)+1;});var ks=Object.keys(ar).sort(function(a,b){return ar[b]-ar[a];});
+    if(mx>18||ks.length>=3)out.push("Day "+d+" 有點分散（最長一段約 "+mx+" 分鐘，跨 "+ks.length+" 區）。建議集中在「"+ks[0]+"」一帶，其他站換成同區的店，或留給別天。");});
+  if(!out.length)return "";
+  return '<div class="panel" style="gap:6px"><h2>區域建議</h2>'+out.map(function(x){return '<div class="hint" style="color:var(--ink)">'+esc(x)+'</div>';}).join("")+'</div>';
+}
+function dayCtl(d){
+  var p=dg(d,"pace"),h='<div class="chips" style="margin-top:10px">'+["relaxed","normal","packed"].map(function(k){return '<button class="chip" data-act="dpace" data-d="'+d+'" data-v="'+k+'" aria-pressed="'+(p===k)+'">'+PACE_LABEL[k]+'</button>';}).join("")+'</div><div class="hint" style="margin-top:4px">'+PACE_HINT[p]+'</div>';
+  var f="";
+  if(d!==1)f+='<label class="f">今天起床<input type="time" data-dset="wake" data-d="'+d+'" value="'+esc(dg(d,"wake"))+'"></label>';
+  if(d!==3)f+='<label class="f">最晚回飯店（凌晨也可以）<input type="time" data-dset="home" data-d="'+d+'" value="'+esc(dg(d,"home"))+'"></label>';
+  if(d===3)f+='<div class="hint">最後一天會自動算出「最晚幾點要從飯店出發去機場」。</div>';
+  var nt=state.aiNote&&state.aiNote[d];
+  return h+'<div class="grid2" style="margin-top:10px">'+f+'</div><button class="btn sm" style="margin-top:10px" data-act="aiday" data-d="'+d+'"'+(busy.day?' disabled':'')+'>'+(busy.day===d?'AI 整理中…':'AI 幫我重新整理 Day '+d)+'</button>'+(nt?'<div class="hint" style="margin-top:4px">AI：'+esc(nt)+'</div>':"");
+}
+var CHK=["領行李、過海關","買 eSIM 或 SIM 卡","買 T-money 交通卡","換一點韓元","確認行李運送單／取件時間","跟飯店確認可代收行李"];
+function d1Panel(){
+  var s=state.set,dir=s.direct!==false,imm=+s.imm||90,tr=s.transit||"bus",chk=state.chk||{};
+  function ch(k,val,on,txt){return '<button class="chip" data-act="d1opt" data-k="'+k+'" data-v="'+val+'" aria-pressed="'+on+'">'+txt+'</button>';}
+  var TH={bus:"機場巴士：直達、不用轉乘，帶行李最輕鬆。",rail:"輕軌＋地鐵：最省錢，但帶行李要轉乘、可能要爬樓梯。",taxi:"計程車：最快最省力，也最貴。"};
+  var sum=(dir?"行李宅配":"帶行李去飯店")+" · 入境"+(imm===60?"1":imm===90?"1.5":"2")+"小時 · "+({bus:"機場巴士",rail:"輕軌＋地鐵",taxi:"計程車"})[tr];
+  return '<details class="panel" id="d1D"'+(state.d1Open?' open':'')+'><summary><b>Day 1 抵達設定</b> <span class="hint">'+sum+'</span></summary><div class="stack" style="margin-top:8px">'
+   +'<div><div class="hint" style="margin-bottom:6px">行李怎麼處理</div><div class="chips">'+ch("direct","1",dir,"行李宅配到飯店，我直接從機場玩")+ch("direct","0",!dir,"帶著行李先去飯店放")+'</div>'
+   +'<div class="hint" style="margin-top:4px">'+(dir?"行李先送走，抵達後可以直接去玩，晚上回飯店就能拿到。要事先預約，請確認尺寸與取件時間。":"先去飯店放行李，再從飯店出發，第一站會離飯店近一點。")+'</div></div>'
+   +'<div><div class="hint" style="margin-bottom:6px">入境＋領行李大約要</div><div class="chips">'+ch("imm","60",imm===60,"1 小時")+ch("imm","90",imm===90,"1.5 小時")+ch("imm","120",imm===120,"2 小時")+'</div></div>'
+   +'<div><div class="hint" style="margin-bottom:6px">機場到市區怎麼去</div><div class="chips">'+ch("transit","bus",tr==="bus","機場巴士")+ch("transit","rail",tr==="rail","輕軌＋地鐵")+ch("transit","taxi",tr==="taxi","計程車")+'</div><div class="hint" style="margin-top:4px">'+TH[tr]+'</div></div>'
+   +'</div></details>';
+}
+function quickRow(d){
+  var Q=[["cafe","＋咖啡甜點"],["food","＋小吃餐廳"],["shop","＋逛街"],["sight","＋景點"],["night","＋夜景"]];
+  return '<div><div class="hint" style="margin-bottom:6px">想到什麼先加進來</div><div class="chips">'+Q.map(function(q){return '<button class="chip" data-act="quick" data-d="'+d+'" data-v="'+q[0]+'">'+q[1]+'</button>';}).join("")+'</div></div>';
+}
+function viewPlan(){
+  var d=state.day,sl=state.plan[d]||[],lab={1:"抵達日",2:"整天",3:"返程日"};
+  var h='<div class="stack">';
+  h+=planTools();
+  h+=advicePanel();
+  var anyStops=dayStops(1).length+dayStops(2).length+dayStops(3).length;if(anyStops)h+=lostHtml();
+  h+='<div class="days">'+[1,2,3].map(function(n){return '<button class="chip" data-act="day" data-v="'+n+'" aria-pressed="'+(n===d)+'">Day '+n+'<br><small>'+PACE_LABEL[dg(n,"pace")].split(" ")[0]+'</small></button>';}).join("")+'</div>';
+  h+='<div class="daybar"><b>Day '+d+' '+lab[d]+'</b><div class="line">'+esc(dayLine(d))+'</div>'+(state.zone&&state.zone[d]?'<div class="route">今天主區域：'+esc(state.zone[d])+'一帶</div>':"")+(dayRoute(d)?'<div class="route">'+esc(dayRoute(d))+'</div>':"")+dayCtl(d)+'</div>';
+  if(d===1)h+=d1Panel();
+  var tp=dayTips(d);if(tp.length)h+='<div class="panel" style="padding:12px 14px;gap:6px"><div class="hint" style="color:var(--ink);font-weight:700">小提醒</div>'+tp.map(function(t){return '<div class="hint">'+esc(t)+'</div>';}).join("")+'</div>';
+  var nextIdx=-1;for(var i=0;i<sl.length;i++){if(!sl[i].st&&!slotItem(sl[i])){nextIdx=i;break;}}
+  if(nextIdx>=0)h+='<button class="nowcard" data-act="open" data-d="'+d+'" data-i="'+nextIdx+'"><b>現在想做什麼？</b><span>下一段：'+esc(sl[nextIdx].label)+'，約 '+fmt(sl[nextIdx].t)+'。點一下，我給你 3 個選項。</span></button>';
+  else if(sl.length)h+='<div class="hint">這一天的空檔都排好了。點任一張卡可以換一個。</div>';
+  if(!sl.length)h+='<div class="panel"><p class="hint">這一天依你的抵達與離開時間，沒有足夠的空檔。可以到設定調整時間。</p></div>';
+  h+='<div class="slots">'+sl.map(function(s,i){return slotHtml(d,i,s);}).join("")+'</div>';
+  h+=quickRow(d);h+='<button class="btn ghost" data-act="addslot" data-d="'+d+'">＋ 再加一站</button>';
+  h+='</div>';
+  return h;
+}
+function modeText(a,b){if(!a||!b)return "";var k=km(a,b),tv=travel(a,b);if(k<0.9)return "步行約 "+Math.max(5,Math.round(k*13))+" 分";if(k<4)return "公車或計程車約 "+tv+" 分";return "地鐵或計程車約 "+tv+" 分";}
+function naverDir(an,name,c,d,tm){var k=km(an.c,c),mode=k<0.9?"walk":"transit";function seg(n,x){return x[1].toFixed(6)+","+x[0].toFixed(6)+","+encodeURIComponent(String(n).replace(/[,\/()]/g," ").trim());}
+  var q="",ds=naverWhen(d,tm);
+  return "https://map.naver.com/p/directions/"+seg(an.name,an.c)+"/"+seg(name,c)+"/-/"+mode+q;}
+function naverWhen(d,tm){var s=state.set.date;if(!s||tm==null)return null;var x=new Date(s+"T00:00:00");if(isNaN(x.getTime()))return null;x.setDate(x.getDate()+(d||1)-1+(tm>=1440?1:0));var m=tm%1440,p=function(n){return (n<10?"0":"")+n;};
+  var day=x.getFullYear()+"-"+p(x.getMonth()+1)+"-"+p(x.getDate());return {iso:day+"T"+p(Math.floor(m/60))+":"+p(m%60)+":00",txt:(x.getMonth()+1)+"/"+x.getDate()+" "+p(Math.floor(m/60))+":"+p(m%60)};}
+function naverTxt(d,tm){var w=naverWhen(d,tm);return "Naver 導航";}
+function kakaoTo(name,c){return "https://map.kakao.com/link/to/"+encodeURIComponent(String(name).replace(/[,()]/g," "))+","+c[0].toFixed(5)+","+c[1].toFixed(5);}
+function slotLabel(s,it){if(!it)return s.label;var c=it.p?it.p.cat:it.cat,h=s.hint;if(!c)return it.p?s.label:"自選";if((h==="food"&&c==="food")||(h==="cafe"&&c==="cafe")||((h==="night"||h==="late")&&c==="night"))return s.label;return CATS[c]||s.label;}
+function slotHtml(d,i,s){
+  var it=slotItem(s),LB=slotLabel(s,it),cls="slot"+(s.st?" skip":(it?"":" empty"));
+  var tm='<div class="tm"><label class="tmbox"><span>'+fmt(s.t)+'</span><input type="time" data-fix="1" data-d="'+d+'" data-i="'+i+'" value="'+fmt(s.t)+'" aria-label="時間"></label>'+(s.t>=1440?'<small>隔天</small>':"")+(s.fix!=null?'<button class="sw" style="margin-top:4px" data-act="unfix" data-d="'+d+'" data-i="'+i+'">自動</button>':'<small>約・'+esc(LB)+'</small>')+(s.fix!=null?'<small>'+esc(LB)+'</small>':'')+'</div>';
+  if(s.st)return '<div class="'+cls+'">'+tm+'<div class="card"><div class="kind">'+esc(LB)+'</div><div class="meta">已跳過，留作自由時間</div><div class="row"><button class="sw" data-act="unskip" data-d="'+d+'" data-i="'+i+'">恢復</button></div></div></div>';
+  if(!it)return '<div class="'+cls+'">'+tm+'<div class="card" data-act="open" data-d="'+d+'" data-i="'+i+'"><div class="kind">'+esc(LB)+'</div><div class="meta">還沒決定。點這裡選。</div><div class="row"><button class="sw" data-act="rmslot" data-d="'+d+'" data-i="'+i+'">移除這段</button></div></div></div>';
+  var an=anchorFor(d,i),tv=travel(an.c,it.c);
+  return '<div class="'+cls+'">'+tm+'<div class="card"><div class="kind">'+esc(LB)+'</div><div class="name">'+esc(it.name)+'</div>'
+    +'<div class="meta">'+esc(it.area||"")+' · 從'+esc(an.name)+'：'+esc(modeText(an.c,it.c))+'</div>'+(it.intro?'<div class="meta" style="color:var(--ink)">'+esc(it.intro)+'</div>':"")+(it.hl?'<div class="meta">'+esc(it.hl)+'</div>':"")+(s.why?'<div class="meta" style="color:var(--sea)">'+esc(s.why)+'</div>':"")+(s.over?'<div class="meta" style="color:var(--buoy)">這一站可能超過你設定的回飯店時間</div>':"")+(s.warn?'<div class="meta" style="color:var(--buoy)">⚠ '+esc(s.warn)+'</div>':"")+(it.p?ohEditor(it.p):"")
+    +'<div class="row">'+(it.pinned?'<span class="tag pin">你的釘選</span>':(it.ai?'<span class="tag">AI 建議</span>':'<span class="tag">補充推薦</span>'))
+    +'<a class="map" href="'+mapsUrl(it.name)+'" target="_blank" rel="noopener">Google 地圖</a>'+(it.c?'<a class="map" href="'+naverDir(an,it.name,it.c,d,s.t)+'" target="_blank" rel="noopener">'+naverTxt(d,s.t)+'</a>':"")+'</div>'
+    +'<div class="row"><button class="sw" data-act="open" data-d="'+d+'" data-i="'+i+'">換一個</button><button class="sw" data-act="insbefore" data-d="'+d+'" data-i="'+i+'">＋ 前面插一站</button><button class="sw" data-act="insafter" data-d="'+d+'" data-i="'+i+'">＋ 後面插一站</button><button class="sw" data-act="rmslot" data-d="'+d+'" data-i="'+i+'">移除</button></div></div></div>';
+}
+
+function viewPlacesOld(){
+  var pl=state.places,cnt=pl.filter(function(p){return p.on;}).length;
+  var needAi=pl.filter(function(p){return p.src==="import"&&(p.cat==="other"||p.area==="待分類");}).length;
+  var h='<div class="stack"><div class="panel"><h2>新增一間店</h2><p class="hint">之後有新的釘選，直接在這裡輸入店名、選類型和區域即可。重複的店會自動略過。</p><label class="f">店名<input type="text" id="qaName" placeholder="例如：某某豬肉湯飯"></label><div class="grid2"><label class="f">類型<select id="qaCat">'+Object.keys(CATS).map(function(c){return '<option value="'+c+'">'+CATS[c]+'</option>';}).join("")+'</select></label><label class="f">區域<select id="qaArea">'+Object.keys(AREAS).concat(["待分類"]).map(function(a){return '<option>'+esc(a)+'</option>';}).join("")+'</select></label></div><div class="row"><button class="btn" data-act="qa">加入清單</button></div></div><div class="panel"><h2>匯入你在 Google 地圖釘選的店</h2>'
+   +'<p class="hint">在 Google Takeout 匯出「已儲存」，可一次選多個檔案上傳。依檔名自動分類：「最愛」愛心歸為吃的，「想去」綠旗歸為住宿與交通，「星號」星星歸為逛的。也可以直接貼店名，一行一個。</p>'
+   +'<input type="file" id="fileIn" multiple accept=".csv,.json,.geojson,text/csv,application/json">'
+   +'<label class="f">或貼上店名<textarea id="pasteIn" placeholder="例如：\n某某豬肉湯飯\n某某咖啡"></textarea></label>'
+   +'<div class="row"><button class="btn" data-act="pasteAdd">加入貼上的店名</button>'
+   +(state.demo?'<button class="btn ghost" data-act="clearDemo">清除示範資料</button>':'<button class="btn ghost" data-act="resetDemo">還原示範資料</button>')+'</div>'
+   +(msgImport?'<div class="msg">'+esc(msgImport)+'</div>':"")+'</div>';
+  if(needAi&&sampleFn)h+='<div class="panel"><h2>有 '+needAi+' 間店還沒分類</h2><p class="hint">請 Claude 依店名判斷所在區域、類型與一句重點。這是依一般認知推測，不是即時讀取 Google 評論。</p><div class="row"><button class="btn" data-act="classify"'+(busy.cls?" disabled":"")+'>'+(busy.cls?"整理中…":"請 AI 整理")+'</button></div></div>';
+  else if(needAi)h+='<div class="panel"><h2>有 '+needAi+' 間店還沒分類</h2><p class="hint">可以在下方手動選區域與類型。</p></div>';
+  h+='<div class="panel"><h2>候選店家 · 納入 '+cnt+' / '+pl.length+'</h2>';
+  if(!pl.length)h+='<p class="hint">還沒有店家。上傳 Takeout 檔或貼上店名開始。</p>';
+  pl.forEach(function(p,i){
+    var opts=Object.keys(AREAS).concat(["待分類"]).map(function(a){return '<option'+(a===p.area?" selected":"")+'>'+esc(a)+'</option>';}).join("");
+    var copts=Object.keys(CATS).map(function(c){return '<option value="'+c+'"'+(c===p.cat?" selected":"")+'>'+CATS[c]+'</option>';}).join("");
+    h+='<div class="pl'+(p.on?"":" off")+'"><div class="t"><b>'+esc(p.name)+'</b><div class="row">'
+      +(p.pinned?'<span class="tag pin">'+(p.src==="demo"?"示範釘選":"你的釘選")+'</span>':'<span class="tag">補充推薦</span>')+'</div>'
+      +(p.hl?'<div class="hint">'+esc(p.hl)+'</div>':"")
+      +'<div class="grid2" style="margin-top:6px"><select data-set="parea" data-i="'+i+'" aria-label="區域">'+opts+'</select><select data-set="pcat" data-i="'+i+'" aria-label="類型">'+copts+'</select></div></div>'
+      +'<div style="display:flex;flex-direction:column;gap:6px"><button class="sw" data-act="must" data-i="'+i+'" aria-pressed="'+(p.must?"true":"false")+'">'+(p.must?"★ 必去":"設為必去")+'</button><button class="sw" data-act="toggle" data-i="'+i+'">'+(p.on?"排除":"納入")+'</button>'+(p.cat==="stay"?'<button class="sw" data-act="setHotel" data-i="'+i+'">設為飯店</button>':"")+'</div></div>';
+  });
+  h+='</div></div>';
+  return h;
+}
+
+
+function viewPlaces(){
+  var s=state.set,pl=state.places,old=viewPlacesOld(),ix=old.indexOf('<div class="panel"><h2>候選店家'),pre=old.slice('<div class="stack">'.length,ix);
+  var areaOpts=Object.keys(AREAS).map(function(a){return '<option'+(a===s.hotelArea?" selected":"")+'>'+esc(a)+'</option>';}).join("");
+  var h='<div class="stack"><div class="panel"><h2>旅程資訊</h2>'
+   +'<div class="grid2"><label class="f">出發日期<input type="date" data-set="date" value="'+esc(s.date||"")+'"></label><label class="f">第一天抵達金海機場<input type="time" data-set="arrive" value="'+esc(s.arrive)+'"></label></div>'
+   +'<div class="grid2"><label class="f">第三天起飛時間<input type="time" data-set="depart" value="'+esc(s.depart)+'"></label><label class="f">飯店所在區域<select data-set="hotelArea">'+areaOpts+'</select></label></div>'
+   +'<label class="f">飯店名稱（選填）<input type="text" data-set="hotelName" value="'+esc(s.hotelName)+'" placeholder="例如：某某飯店"></label>'
+   +'<p class="hint">填了出發日期，才能避開店家的公休日。起床與回飯店時間在「行程」頁每天各自設定。</p></div>';
+  h+='<div class="panel"><h2>用 Google 地圖網址新增</h2><p class="hint">在 Google 地圖打開店家頁面，複製網址列的完整網址貼在這裡（可一次貼多個，一行一個）。會自動抓店名、座標、區域，並判斷分類。分享出來的短網址（maps.app.goo.gl）只有在 Claude 桌面版打開這個頁面時才能自動展開；手機請先在瀏覽器打開短網址，再複製網址列的完整網址。</p><textarea id="urlIn" rows="3" placeholder="https://www.google.com/maps/place/..." style="width:100%"></textarea><div class="acts" style="margin-top:8px"><button class="btn" data-act="addUrl">加入並自動分類</button></div>'+(msgUrl?'<p class="hint">'+esc(msgUrl)+'</p>':'')+'</div>';
+  h+='<div class="panel"><h2>分享行程給朋友</h2><p class="hint">按「產生行程代碼」會把你的景點清單、每天行程和旅程設定壓成一串文字，貼到 LINE 傳給朋友。朋友在自己的頁面貼上、按「匯入」，就會得到同一份行程，不需要 Claude 帳號。這是傳送一份拷貝，不是即時同步，雙方改動不會互相影響。</p><div class="acts"><button class="btn" data-act="shMake">產生行程代碼並複製</button></div>'+(shareCode?'<textarea id="shOut" rows="3" readonly style="width:100%;margin-top:8px">'+esc(shareCode)+'</textarea>':'')+'<textarea id="shIn" rows="3" placeholder="貼上朋友傳來的行程代碼（BUSAN2:…）" style="width:100%;margin-top:8px"></textarea><div class="acts" style="margin-top:8px"><button class="btn" data-act="shImport">'+(shareArm?'會覆蓋你現有的行程，再按一次確定匯入':'匯入行程代碼')+'</button></div>'+(msgShare?'<p class="hint">'+esc(msgShare)+'</p>':'')+'</div>';
+  var CF=[["all","全部"],["must","必去"],["food","吃"],["cafe","咖啡"],["sight","景點"],["shop","逛街"],["night","夜景"],["stay","住宿交通"],["life","生活服務"],["other","待分類"]],pf=state.pf||"all",q=(state.pq||"").trim().toLowerCase();
+  function inF(p){if(pf==="all")return true;if(pf==="must")return !!p.must;return p.cat===pf;}
+  function cnt(k){return pl.filter(function(p){return k==="all"?true:(k==="must"?p.must:p.cat===k);}).length;}
+  h+='<div class="panel"><h2>口袋名單 · 納入 '+pl.filter(function(p){return p.on;}).length+' / '+pl.length+'</h2>'
+   +'<label class="f"><input type="search" data-set="pq" value="'+esc(state.pq||"")+'" placeholder="搜尋店名、區域"></label>'
+   +'<div class="chips">'+CF.map(function(c){return '<button class="chip" data-act="pf" data-v="'+c[0]+'" aria-pressed="'+(pf===c[0])+'">'+c[1]+' '+cnt(c[0])+'</button>';}).join("")+'</div>';
+  var groups={};pl.forEach(function(p,i){if(!inF(p))return;if(q&&(p.name+" "+p.area+" "+(p.hl||"")).toLowerCase().indexOf(q)<0)return;(groups[p.area]=groups[p.area]||[]).push({p:p,i:i});});
+  var keys=Object.keys(groups).sort(function(a,b){return groups[b].length-groups[a].length;});
+  if(!keys.length)h+='<p class="hint">沒有符合的店。</p>';
+  keys.forEach(function(a){
+    h+='<div class="grp"><b>'+esc(a)+'</b><span>'+groups[a].length+' 間</span></div>';
+    groups[a].forEach(function(o){var p=o.p,i=o.i;
+      var opts=Object.keys(AREAS).concat(["待分類"]).map(function(x){return '<option'+(x===p.area?" selected":"")+'>'+esc(x)+'</option>';}).join("");
+      var copts=Object.keys(CATS).map(function(c){return '<option value="'+c+'"'+(c===p.cat?" selected":"")+'>'+CATS[c]+'</option>';}).join("");
+      h+='<div class="pl2'+(p.on?"":" off")+'"><div class="top"><div class="t"><b>'+esc(p.name)+'</b><div class="hint"><span class="tag'+(p.pinned?' pin':'')+'">'+esc(CATS[p.cat]||"")+'</span> '+(p.rating?p.rating+'★ ':'')+(p.pinned?'':'· 補充推薦 ')+'· '+esc(hrsText(p))+'</div>'+((INTRO[p.name]||p.hl)?'<div class="hint" style="color:var(--ink)">'+esc(INTRO[p.name]||p.hl)+(INTRO[p.name]?'':'（AI 簡介，未查證）')+'</div>':"")+(p.gurl?'<div class="hint"><a class="map" href="'+esc(p.gurl)+'" target="_blank" rel="noopener">到 Google 地圖確認營業時間</a>'+(p.oh?'':'（目前為預估時間，可在下方編輯）')+'</div>':'')+'</div>'
+        +'<div class="acts"><button class="sw" data-act="must" data-i="'+i+'" aria-pressed="'+(p.must?"true":"false")+'">'+(p.must?"★ 必去":"必去")+'</button><button class="sw" data-act="delPlace" data-i="'+i+'" style="color:#b3261e">'+(state.delArm===i?"再按確定刪除":"刪除")+'</button></div></div>'
+        +'<details class="oh"><summary>編輯</summary>'+(p.hl?'<div class="hint">'+esc(p.hl)+'</div>':"")+'<div class="grid2" style="margin-top:6px"><select data-set="parea" data-i="'+i+'" aria-label="區域">'+opts+'</select><select data-set="pcat" data-i="'+i+'" aria-label="類型">'+copts+'</select></div>'
+        +(p.cat==="stay"?'<div style="margin-top:6px"><button class="sw" data-act="setHotel" data-i="'+i+'">設為飯店</button></div>':"")+'<div style="margin-top:6px">'+ohEditor(p)+'</div></details></div>';});});
+  h+='</div><details class="panel addbox"><summary><b>新增或匯入店家</b></summary>'+pre+'</details></div>';
+  return h;
+}
+function viewSet(){
+  var s=state.set,areaOpts=Object.keys(AREAS).map(function(a){return '<option'+(a===s.hotelArea?" selected":"")+'>'+esc(a)+'</option>';}).join("");
+  var h='<div class="stack"><div class="panel"><h2>三天兩夜的邊界</h2>'
+   +'<div class="grid2"><label class="f">第一天抵達金海機場<input type="time" id="s_arrive" data-set="arrive" value="'+esc(s.arrive)+'"></label>'
+   +'<label class="f">第三天起飛時間<input type="time" id="s_depart" data-set="depart" value="'+esc(s.depart)+'"></label></div>'
+   +'<div class="grid2"><label class="f">飯店所在區域<select id="s_area" data-set="hotelArea">'+areaOpts+'</select></label>'
+   +'<label class="f">飯店名稱（選填）<input type="text" id="s_hotel" data-set="hotelName" value="'+esc(s.hotelName)+'" placeholder="例如：某某飯店"></label></div></div>'
+   +'</div>';
+  return h;
+}
+
+function sheetRow(name,area,sub,intro,hrs,wn,tag,mapName,btn){
+  return '<div class="srow"><div class="sr1"><b>'+esc(name)+'</b>'+tag+'</div><div class="hint">'+esc(area)+(sub?' · '+esc(sub):'')+'</div>'+(intro?'<div class="sri">'+esc(intro)+'</div>':'')+(hrs?'<div class="hint">'+esc(hrs)+'</div>':'')+(wn?'<div class="hint" style="color:var(--buoy)">⚠ '+esc(wn)+'</div>':'')+'<div class="row"><a class="map" href="'+mapsUrl(mapName)+'" target="_blank" rel="noopener">看地圖與評論</a>'+btn+'</div></div>';
+}
+function renderSheet(){
+  var L=document.getElementById("layer");
+  if(!sheet){L.innerHTML="";return;}
+  if(!sheet.src)sheet.src="mine";if(!sheet.mood)sheet.mood="any";
+  var sl=state.plan[sheet.d][sheet.i],h='<div class="bg" data-act="close"></div><div class="sheet" role="dialog" aria-modal="true"><div class="in">';
+  h+='<div class="row" style="justify-content:space-between"><h3>Day '+sheet.d+' '+esc(sl.label)+'，約 '+fmt(sl.t)+'</h3><button class="sw" data-act="close">關閉</button></div>';
+  h+='<div class="chips">'+MOODS.map(function(m){return '<button class="chip" data-act="mood" data-v="'+m[0]+'" aria-pressed="'+(sheet.mood===m[0])+'">'+m[1]+'</button>';}).join("")+'</div>';
+  h+='<div class="chips"><button class="chip" data-act="src" data-v="mine" aria-pressed="'+(sheet.src==="mine")+'">我的清單</button><button class="chip" data-act="src" data-v="ai" aria-pressed="'+(sheet.src==="ai")+'">AI 推薦</button></div>';
+  if(sheet.src==="mine"){
+    var opts=options(sheet.d,sheet.i,sheet.mood,0,true);
+    h+='<div class="hint">'+opts.length+' 個，依距離與評價排序</div><div class="slist">';
+    if(!opts.length)h+='<div class="hint">這個分類在我的清單裡沒有可選的了，可以切到「AI 推薦」。</div>';
+    opts.forEach(function(o){
+      h+=sheetRow(o.p.name,o.p.area,'從'+o.an+'約 '+o.tv+' 分鐘'+(CATS[o.p.cat]?' · '+CATS[o.p.cat]:''),INTRO[o.p.name]||o.p.hl||'',hrsText(o.p),o.wn,(o.p.pinned?'<span class="tag pin">你的釘選</span>':'<span class="tag">補充</span>'),o.p.name,'<button class="btn sm" data-act="pick" data-id="'+esc(o.p.id)+'">選這個</button>');
+    });
+    h+='</div>';
+  }else{
+    h+='<div class="row">'+(sampleFn?'<button class="btn sm" data-act="ai"'+(sheet.busy?" disabled":"")+'>'+(sheet.busy?"想想看…":(sheet.ai&&sheet.ai.length?"再換一批":"請 AI 推薦一批"))+'</button>':'<span class="hint">目前無法使用 AI。</span>')+'</div>';
+    if(sheet.err)h+='<div class="msg">'+esc(sheet.err)+'</div>';
+    h+='<div class="slist">';
+    (sheet.ai||[]).forEach(function(a,n){
+      h+=sheetRow(a.name,a.area||'',CATS[a.cat]||'',a.why||'','','','<span class="tag">AI 建議</span>',a.name,'<button class="btn sm" data-act="pickAI" data-n="'+n+'">選這個</button>');
+    });
+    h+='</div><div class="hint">AI 推薦未必準確，請用「看地圖與評論」確認有營業再去。</div>';
+  }
+  h+='<label class="f">或自己輸入想去的地方<input type="text" id="customIn" placeholder="店名或地點"></label><div><button class="btn ghost sm" data-act="pickCustom">加入這個</button></div>';
+  h+='</div></div>';
+  L.innerHTML=h;
+}
+
+/* import */
+function parseCSV(t){
+  var rows=[],r=[],f="",q=false;t=t.replace(/^﻿/,"");
+  for(var i=0;i<t.length;i++){var c=t[i];
+    if(q){if(c==='"'){if(t[i+1]==='"'){f+='"';i++;}else q=false;}else f+=c;}
+    else if(c==='"')q=true;
+    else if(c===","){r.push(f);f="";}
+    else if(c==="\n"||c==="\r"){if(c==="\r"&&t[i+1]==="\n")i++;r.push(f);f="";rows.push(r);r=[];}
+    else f+=c;}
+  if(f||r.length){r.push(f);rows.push(r);}
+  return rows.filter(function(x){return x.some(function(y){return y.trim();});});
+}
+function nearestArea(lat,lng){
+  if(!(lat>34.8&&lat<35.5&&lng>128.7&&lng<129.5))return "待分類";
+  var best=null,bd=1e9;Object.keys(AREAS).forEach(function(a){var d=km([lat,lng],AREAS[a]);if(d<bd){bd=d;best=a;}});
+  return bd<6?best:"待分類";
+}
+function mk(name,lat,lng,note,lc){
+  var area=(lat!=null)?nearestArea(lat,lng):"待分類";
+  return {id:"u"+Date.now().toString(36)+Math.random().toString(36).slice(2,6),name:name,area:area,cat:lc||"other",lat:lat,lng:lng,indoor:false,pinned:true,pri:2,hl:note||"",src:"import",on:true};
+}
+function addPlaces(arr){
+  var have={};state.places.forEach(function(p){have[p.name]=1;});
+  var added=0;arr.forEach(function(p){if(p.name&&!have[p.name]){state.places.push(p);have[p.name]=1;added++;}});
+  if(added&&state.demo&&!state.places.some(function(p){return p.src==="demo";})){}
+  return added;
+}
+/* ===== Google 地圖網址 → 景點 ===== */
+function olcDecode(code){
+  var A="23456789CFGHJMPQRVWX",c=String(code).toUpperCase().replace("+","");
+  if(c.length<10||/[^23456789CFGHJMPQRVWX]/.test(c))return null;
+  var lat=-90,lng=-180,res=20,i;
+  for(i=0;i<10;i+=2){lat+=A.indexOf(c[i])*res;lng+=A.indexOf(c[i+1])*res;res/=20;}
+  var la=0.000125,lo=0.000125;
+  for(i=10;i<c.length;i++){var d=A.indexOf(c[i]);la/=5;lo/=4;lat+=Math.floor(d/4)*la;lng+=(d%4)*lo;}
+  return [lat+la/2,lng+lo/2];
+}
+function s2ToLatLng(hex){
+  var id=BigInt("0x"+hex),face=Number(id>>61n),low=id&(-id),L;
+  var tz=0;while(((low>>BigInt(tz))&1n)===0n)tz++;L=30-(tz>>1);
+  var PI=[[0,1,3,2],[0,2,3,1],[3,2,0,1],[3,1,0,2]],PO=[1,0,0,3],o=face&1,i=0,j=0;
+  for(var k=1;k<=L;k++){var pos=Number((id>>BigInt(2*(30-k)+1))&3n),ij=PI[o][pos];i=i*2+(ij>>1);j=j*2+(ij&1);o^=PO[pos];}
+  var sz=Math.pow(2,30-L),ci=(i*sz+sz/2)/Math.pow(2,30),cj=(j*sz+sz/2)/Math.pow(2,30);
+  function uv(s){return s>=0.5?(4*s*s-1)/3:(1-4*(1-s)*(1-s))/3;}
+  var u=uv(ci),v=uv(cj),x,y,z;
+  switch(face){case 0:x=1;y=u;z=v;break;case 1:x=-u;y=1;z=v;break;case 2:x=-u;y=-v;z=1;break;case 3:x=-1;y=-v;z=-u;break;case 4:x=v;y=-1;z=-u;break;default:x=v;y=u;z=-1;}
+  return [Math.atan2(z,Math.hypot(x,y))*180/Math.PI,Math.atan2(y,x)*180/Math.PI,L];
+}
+function gmParse(u){
+  u=String(u).trim();if(!/^https?:\/\//i.test(u))return {err:"不是網址"};
+  if(/maps\.app\.goo\.gl|goo\.gl\/maps/i.test(u))return {short:true};
+  var nm="",m=u.match(/\/maps\/place\/([^\/?#]+)/);
+  if(m){try{nm=decodeURIComponent(m[1].replace(/\+/g," "));}catch(e){nm=m[1].replace(/\+/g," ");}}
+  nm=nm.split(/\s*[,，]\s*/)[0].replace(/\s*\d+[\w-]*\s+[A-Za-z][\w.-]*(?:daero|ro|gil)\b.*$/i,"").replace(/\s*[·\n].*$/,"").trim();
+  var du;try{du=decodeURIComponent(u);}catch(e){du=u;}
+  if(!nm){var qm=u.match(/[?&]q=([^&#]+)/);if(qm){try{nm=decodeURIComponent(qm[1].replace(/\+/g," "));}catch(e){nm=qm[1].replace(/\+/g," ");}if(/^-?\d+\.\d+,\s*-?\d+\.\d+$/.test(nm))nm="";nm=nm.split(/\s*[,，]\s*/)[0].replace(/\s*\d+[\w-]*\s+[A-Za-z][\w.-]*(?:daero|ro|gil)\b.*$/i,"").trim();}}
+  var lat=null,lng=null,x;
+  if((x=du.match(/!3d(-?\d+\.\d+)!4d(-?\d+\.\d+)/))){lat=+x[1];lng=+x[2];}
+  else if((x=du.match(/[?&](?:q|ll|query|destination)=(-?\d+\.\d+),(-?\d+\.\d+)/))){lat=+x[1];lng=+x[2];}
+  else if((x=du.match(/!20s([23456789CFGHJMPQRVWX]{8}\+[23456789CFGHJMPQRVWX]{2,})/i))){var o=olcDecode(x[1]);if(o){lat=o[0];lng=o[1];}}
+  else if((x=du.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/))){lat=+x[1];lng=+x[2];}
+  if(lat==null&&(x=du.match(/(?:1s|ftid=)0x([0-9a-f]{16}):0x[0-9a-f]+/i))){try{var q=s2ToLatLng(x[1]);if(isFinite(q[0])&&isFinite(q[1])){lat=q[0];lng=q[1];}}catch(e){}}
+  if(!nm)return {err:"網址裡找不到店名，請用 Google 地圖『分享』或直接複製店家頁面的網址"};
+  if(lat==null)return {err:"找不到座標（"+nm+"）"};
+  if(lat<34.8||lat>35.5||lng<128.7||lng>129.5)return {err:nm+" 不在釜山範圍內"};
+  return {name:nm,lat:lat,lng:lng,url:u};
+}
+function guessCat(n){
+  var s=String(n).toLowerCase();
+  var R=[["life",/우체국|post ?office|郵局|약국|pharmacy|藥局|药局|은행|\bbank\b|銀行|병원|hospital|醫院|의원|clinic|診所|편의점|convenience|\bcu\b|gs25|7-?eleven|세븐일레븐|이마트24|emart24|세탁|laundry|洗衣|ATM|환전|exchange|換錢|짐보관|locker|寄物|코인락커|주차장|parking|停車/],["cafe",/카페|커피|coffee|cafe|café|베이커리|bakery|디저트|dessert|咖啡|甜點|빵|제과|티룸|tea|roasters|도넛|donut|아이스크림|ice cream|젤라또/],
+  ["night",/bar\b|pub\b|포차|야경|루프탑|rooftop|술집|酒吧|전망대|夜景|lounge|클럽|club/],
+  ["stay",/호텔|hotel|motel|모텔|게스트|guest ?house|resort|리조트|hostel|飯店|旅館|민박|펜션|역\b|station|공항|airport|터미널|terminal|站$|車站|機場/],
+  ["food",/식당|횟집|국밥|고기|갈비|삼겹|곱창|냉면|밀면|칼국수|국수|막창|해물|조개|회\b|초밥|스시|sushi|ramen|라멘|pizza|burger|버거|restaurant|grill|bbq|돼지|닭|치킨|chicken|떡볶이|분식|김밥|족발|보쌈|찜|탕|면옥|한우|오마카세|izakaya|이자카야|餐|麵|飯|燒肉|烤|鍋|海鮮|牛|豬|雞|食堂|굴|전집|죽|만두|우동|돈까스|카츠|tavern|kitchen|diner|bistro|steak|pasta/],
+  ["shop",/마트|mart|시장|market|백화점|department|mall|몰\b|outlet|아울렛|shop|store|스토어|편집숍|올리브영|olive young|다이소|daiso|vintage|빈티지|百貨|商場|市場|購物|문구|서점|bookstore|gallery|갤러리|쇼룸|showroom/],
+  ["sight",/공원|park\b|사찰|절\b|temple|전망|museum|박물관|미술관|해수욕장|beach|해변|海邊|海灘|寺|公園|博物館|美術館|文化村|문화마을|tower|타워|bridge|대교|해안|둘레길|산책|trail|성당|church|궁|성\b|castle|타워|등대|lighthouse|폭포|아쿠아|aquarium|수족관|전시|exhibition|스카이|sky ?walk|해상|케이블카|cable car|동물원|zoo|테마파크|theme park/]];
+  for(var i=0;i<R.length;i++)if(R[i][1].test(s))return R[i][0];
+  return "other";
+}
+async function resolveShort(u){
+  var mcp=await claude.use("mcp");if(!mcp)throw new Error("no mcp");
+  var RP=/https:\/\/www\.google\.com\/maps\/place\/[^"\s)\\]+/,RQ=/https:\/\/www\.google\.com\/maps\?q=[^"\s)\\]+/,fb=null;
+  var r=await mcp.callTool("host:claude_browser","preview_start",{url:u}),t=JSON.stringify(r),m=t.match(RP);
+  if(m)return m[0];if(!fb&&(m=t.match(RQ)))fb=m[0];var id=(t.match(/tabId[\s"':]+([A-Za-z0-9_-]+)/)||[])[1];
+  for(var k=0;k<6;k++){await new Promise(function(f){setTimeout(f,2500);});
+    var q=JSON.stringify(id?await mcp.callTool("host:claude_browser","get_page_text",{tabId:id}):await mcp.callTool("host:claude_browser","get_page_text",{}));m=q.match(RP);if(m)return m[0];if(!fb&&(m=q.match(RQ)))fb=m[0];}
+  if(fb)return fb;throw new Error("timeout");
+}
+async function addUrls(txt){
+  var urls=String(txt).split(/\s+/).filter(function(x){return /^https?:/i.test(x);}),list=[],errs=[];
+  if(!urls.length)return {added:0,msg:"沒有看到網址，請貼上 Google 地圖網址（可一次貼多個，一行一個）。"};
+  for(var n0=0;n0<urls.length;n0++){var u=urls[n0],r=gmParse(u);
+    if(r.short){try{msgUrl="展開短網址中（"+(n0+1)+"/"+urls.length+"）…";render();r=gmParse(await resolveShort(u));}catch(e){r={err:"短網址無法在這裡展開（需要用 Claude 桌面版開啟頁面）。請改貼完整網址"};}}
+    if(r.err){errs.push(r.err);continue;}var np=mk(r.name,r.lat,r.lng,"",guessCat(r.name));np.gurl=r.url;list.push(np);if(state.gone)delete state.gone[r.name];}
+  var n=addPlaces(list);
+  if(n&&state.demo){state.places=state.places.filter(function(p){return p.src!=="demo";});state.demo=false;}
+  save();
+  var msg=(n?"已加入 "+n+" 間："+list.slice(0,6).map(function(p){return p.name+"（"+CATS[p.cat]+"）";}).join("、")+(list.length>6?"…":""):"沒有新增")+(list.length-n?"；略過 "+(list.length-n)+" 間重複":"")+(errs.length?"；失敗 "+errs.length+" 筆："+errs.filter(function(x,i){return errs.indexOf(x)===i;}).slice(0,3).join("；"):"");
+  return {added:n,msg:msg};
+}
+
+/* ===== 分享行程代碼 ===== */
+var SHK=["set","places","plan","days","del","gone","hotel"];
+function b64u(u8){var b="";for(var i=0;i<u8.length;i+=8192)b+=String.fromCharCode.apply(null,u8.subarray(i,i+8192));return btoa(b).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"");}
+function unb64u(t){t=t.replace(/-/g,"+").replace(/_/g,"/");while(t.length%4)t+="=";var b=atob(t),u=new Uint8Array(b.length);for(var i=0;i<b.length;i++)u[i]=b.charCodeAt(i);return u;}
+async function shareMake(){
+  var o={};SHK.forEach(function(k){if(state[k]!==undefined)o[k]=state[k];});
+  var j=new TextEncoder().encode(JSON.stringify(o));
+  if(window.CompressionStream){var cs=new Blob([j]).stream().pipeThrough(new CompressionStream("gzip"));var u8=new Uint8Array(await new Response(cs).arrayBuffer());return "BUSAN2:"+b64u(u8);}
+  return "BUSAN1:"+b64u(j);
+}
+async function shareRead(t){
+  t=String(t).trim().replace(/\s+/g,"");var m=t.match(/(BUSAN[12]):([A-Za-z0-9_-]+)/);if(!m)throw new Error("格式不對");
+  var u8=unb64u(m[2]),txt;
+  if(m[1]==="BUSAN2"){if(!window.DecompressionStream)throw new Error("此瀏覽器不支援");var ds=new Blob([u8]).stream().pipeThrough(new DecompressionStream("gzip"));txt=await new Response(ds).text();}
+  else txt=new TextDecoder().decode(u8);
+  var o=JSON.parse(txt);if(!o||!o.places||!o.set)throw new Error("內容不完整");return o;
+}
+var msgShare="",shareCode="",shareArm=false;
+var msgUrl='';
+function listCat(n){n=String(n);if(/最愛|favorite/i.test(n))return "food";if(/想去|want/i.test(n))return "stay";if(/星號|starred/i.test(n))return "sight";return "other";}
+function importText(name,text){
+  var lc=listCat(name),list=[];
+  try{
+    if(/\.(json|geojson)$/i.test(name)||/^\s*[\[{]/.test(text)){
+      var o=JSON.parse(text),fs=o.features||(Array.isArray(o)?o:[]);
+      fs.forEach(function(f){var pr=f.properties||f,nm=pr.Title||pr.title||pr.name||(pr.location&&pr.location.name);if(!nm)return;
+        var co=f.geometry&&f.geometry.coordinates,lat=null,lng=null;
+        if(co&&co.length>=2&&(co[0]||co[1])){lng=+co[0];lat=+co[1];}
+        list.push(mk(nm,lat,lng,pr.Note||pr.Comment||"",lc));});
+    }else{
+      var rows=parseCSV(text);if(!rows.length)throw new Error("empty");
+      var hd=rows[0].map(function(x){return x.trim().toLowerCase();});
+      var ti=hd.indexOf("title");if(ti<0)ti=hd.indexOf("標題");if(ti<0)ti=hd.indexOf("名稱");if(ti<0)ti=0;
+      var ni=hd.indexOf("note"),ci=hd.indexOf("comment");
+      rows.slice(1).forEach(function(r){var nm=(r[ti]||"").trim();if(!nm)return;list.push(mk(nm,null,null,((ni>=0&&r[ni])||(ci>=0&&r[ci])||"").trim(),lc));});
+    }
+  }catch(e){msgImport+=name+"：讀不出來，請確認是 Takeout 匯出的 CSV 或 JSON。\n";render();return;}
+  var n=addPlaces(list);
+  if(n&&state.demo){state.places=state.places.filter(function(p){return p.src!=="demo";});state.demo=false;}
+  msgImport+=name+"：加入 "+n+" 間"+(list.length-n?"，略過 "+(list.length-n)+" 間重複":"")+(lc!=="other"?"，歸類為「"+CATS[lc]+"」":"")+"\n";
+  rebuildKeep();render();
+}
+function rebuildKeep(){save();}
+
+/* AI */
+function errCopy(e){var c=e&&e.code;
+  if(c==="not_granted"||c==="sampling_disabled"||c==="not_declared"||c==="capability_disabled")return "目前無法使用 AI，請用手動選擇。";
+  if(c==="rate_limited")return "呼叫太頻繁或已達使用上限，請稍後再試。";
+  if(c==="invalid_json")return "AI 回覆格式不對，請再按一次。";
+  if(c==="cancelled")return "";
+  return "AI 暫時沒有回應，請稍後再試。";}
+async function classify(){
+  if(!sampleFn||busy.cls)return;
+  var idx=[];state.places.forEach(function(p,i){if(p.src==="import"&&(p.cat==="other"||p.area==="待分類"))idx.push(i);});
+  idx=idx.slice(0,40);if(!idx.length)return;
+  busy.cls=true;msgImport="";render();
+  var names=idx.map(function(i,n){return n+": "+state.places[i].name;}).join("\n");
+  var prompt="以下是旅客在釜山釘選的店家與地點名稱。請依你對釜山的了解，為每一個判斷所在區域、類型與一句 25 字內的重點。\n"
+   +"區域只能是這些之一："+Object.keys(AREAS).join("、")+"，不確定就填「待分類」。類型只能是：food, cafe, sight, shop, night, rest, life（郵局、藥局、銀行、便利商店等生活服務）, stay（住宿或交通站點）, other。不確定就填 other，不要編造。\n"
+   +'只回 JSON 陣列，格式：[{"n":0,"area":"海雲台","cat":"food","hl":"一句重點","indoor":false}]\n\n'+names;
+  try{
+    var r=await sampleFn.json(prompt,{modelTier:"quick"});
+    var c=0;(Array.isArray(r)?r:[]).forEach(function(x){var p=state.places[idx[+x.n]];if(!p)return;
+      if(AREAS[x.area])p.area=x.area;if(CATS[x.cat]&&p.cat==="other")p.cat=x.cat;if(x.hl&&!p.hl)p.hl=String(x.hl).slice(0,60);if(typeof x.indoor==="boolean")p.indoor=x.indoor;c++;});
+    msgImport="已整理 "+c+" 間。這是 AI 的推測，請在 Google 地圖確認。";save();
+  }catch(e){msgImport=errCopy(e);}
+  busy.cls=false;render();
+}
+async function aiSuggest(){
+  if(!sampleFn||!sheet||sheet.busy)return;
+  var sl=state.plan[sheet.d][sheet.i],an=anchorFor(sheet.d,sheet.i);
+  var planned=[];for(var d in state.plan)state.plan[d].forEach(function(s){var it=slotItem(s);if(it)planned.push(it.name);});
+  var mood=MOODS.filter(function(m){return m[0]===sheet.mood;})[0][1];var seen=(sheet.aiSeen||[]).slice(-40);
+  sheet.busy=true;sheet.err="";renderSheet();
+  var prompt="旅客在釜山三天兩夜，住在"+state.set.hotelArea+"。現在是第 "+sheet.d+" 天"+sl.label+"（約 "+fmt(sl.t)+"），目前位置在「"+an.name+"」附近，想要：「"+mood+"」。\n"
+   +"請推薦 8 個你確定存在、評價普遍不錯的地方，優先在目前位置車程 30 分鐘內，類型要多樣。避開這些已排或已推薦過的："+(planned.concat(seen).join("、")||"無")+"。\n"
+   +"不確定是否存在或是否仍營業的就不要列。只回 JSON 陣列："+'[{"name":"店名","area":"區域","cat":"food|cafe|sight|shop|night|rest","why":"一句理由"}]';
+  try{var r=await sampleFn.json(prompt,{modelTier:"quick",cache:false});
+    sheet.ai=(Array.isArray(r)?r:[]).slice(0,10).filter(function(x){return x&&x.name;});(sheet.aiSeen=sheet.aiSeen||[]).push.apply(sheet.aiSeen,sheet.ai.map(function(x){return x.name;}));
+    if(!sheet.ai.length)sheet.err="這次沒有合適的建議。";
+  }catch(e){sheet.err=errCopy(e);}
+  if(sheet)sheet.busy=false;renderSheet();
+}
+
+/* suggested itinerary */
+function hintOk(h,p){
+  if(p.cat==="stay")return false;
+  if(h==="night")return p.cat==="night";
+  if(p.cat==="night")return false;
+  if(h==="food")return p.cat==="food";
+  if(h==="cafe")return p.cat==="cafe"||p.cat==="rest"||p.cat==="shop";
+  return p.cat==="sight"||p.cat==="shop"||p.cat==="other";}
+var MAXLEG=18,RADIUS=20;
+function quality(p){if(!p.rating)return 0;var n=p.rc||1,r=(n*p.rating+20*4.2)/(n+20);return (r-4)*1.5+Math.min(Math.log10(n),4)*0.25;}
+function startC(d){return (d===1&&state.set.direct!==false)?AIRPORT:hotelC();}
+function hsh(str){var h=7,i;for(i=0;i<str.length;i++)h=(h*31+str.charCodeAt(i))%9973;return h/9973;}
+function simDay(d,center,used,seed){
+  var sl=state.plan[d]||[],pool=[],best={s:-1e9,picks:[],gaps:0},hot=hotelC();
+  state.places.forEach(function(p){
+    if(!p.on||used[p.id]||p.cat==="stay"||(p.lat==null&&p.area==="待分類"))return;
+    var c=coordOf(p);if(!c||travel(center,c)>RADIUS)return;
+    pool.push({p:p,c:c,fg:fgOf(p),q:(p.pinned?3:0)+(p.pri||1)+quality(p)+(p.must?6:0)+(seed?hsh(p.id+seed)*1.6:0)});});
+  var firstName=(d===1&&state.set.direct!==false)?"機場":"飯店",firstMax=d===1?60:40;
+  var gc={};
+  function go(i,anc,aname,first,taken,score,picks,gaps){
+    if(i>=sl.length){
+      var tot=score-gaps*0.8-(picks.length?travel(anc,hot)/8:0);
+      if(d===3&&picks.length)tot-=travel(anc,AIRPORT)/10;
+      if(picks.length&&tot>best.s)best={s:tot,picks:picks.slice(),gaps:gaps};return;}
+    var s0=sl[i];
+    if(s0.st){go(i+1,anc,aname,first,taken,score,picks,gaps);return;}
+    var it=slotItem(s0);
+    if(it){go(i+1,it.c||anc,it.name,false,taken,score,picks,gaps);return;}
+    var cands=[];
+    pool.forEach(function(o){
+      if(taken[o.p.id]||!hintOk(s0.hint,o.p))return;
+      if(s0.t>0&&openWarn(o.p,s0.t,d))return;
+      var tv=travel(anc,o.c);if(tv>(first?firstMax:MAXLEG))return;
+      cands.push({o:o,tv:tv,v:o.q-tv/3.5+(o.fg>=0?0.5+(o.fg<7?(gc[o.fg]||0)*1.0:0):0)});});
+    cands.sort(function(x,y){return y.v-x.v;});
+    cands.slice(0,3).forEach(function(c){
+      taken[c.o.p.id]=1;if(c.o.fg>=0)gc[c.o.fg]=(gc[c.o.fg]||0)+1;picks.push({i:i,p:c.o.p,tv:c.tv,an:aname});
+      go(i+1,c.o.c,c.o.p.name,false,taken,score+c.v,picks,gaps);
+      picks.pop();if(c.o.fg>=0)gc[c.o.fg]--;delete taken[c.o.p.id];});
+    go(i+1,anc,aname,first,taken,score,picks,gaps+1);}
+  go(0,startC(d),firstName,true,{},0,[],0);
+  return best;}
+function autoPlan(all){
+  var n=0,d,seed=state.variant||0;
+  if(all){for(d=1;d<=3;d++)(state.plan[d]||[]).forEach(function(s){if(!s.st){s.pid=null;s.c=null;s.why="";}});state.zone={};}
+  state.zone=state.zone||{};
+  var used=usedIds(),empties={},centers={};
+  [1,2,3].forEach(function(dd){empties[dd]=(state.plan[dd]||[]).filter(function(s){return !s.st&&!slotItem(s);}).length;});
+  [1,2,3].sort(function(a,b){return empties[b]-empties[a]||a-b;}).forEach(function(dd){
+    if(!empties[dd])return;
+    var best=null;
+    Object.keys(AREAS).forEach(function(name){
+      var r=simDay(dd,AREAS[name],used,seed);if(!r.picks.length)return;
+      var pen=0;for(var k in centers)if(km(centers[k],AREAS[name])<3)pen+=4;
+      var sc=r.s-pen;if(!best||sc>best.sc)best={r:r,name:name,sc:sc};});
+    if(!best)return;
+    state.zone[dd]=best.name;centers[dd]=AREAS[best.name];
+    best.r.picks.forEach(function(pk){
+      var s=state.plan[dd][pk.i];s.pid=pk.p.id;s.c=null;used[pk.p.id]=1;
+      s.why=(pk.p.pinned?"你的釘選":"補充推薦")+(fgOf(pk.p)>=0?" · 朋友行程也有":"")+(pk.p.rating?" · Google "+pk.p.rating+"★":"")+" · 離"+pk.an+"約 "+pk.tv+" 分鐘";n++;});});
+  return n;}
+function lostList(){
+  var used=usedIds(),cs=[],out=[],d;
+  for(d=1;d<=3;d++){var st=dayStops(d);if(st.length){var la=0,ln=0;st.forEach(function(x){la+=x.it.c[0];ln+=x.it.c[1];});cs.push({d:d,c:[la/st.length,ln/st.length],z:(state.zone&&state.zone[d])||""});}}
+  state.places.forEach(function(p){
+    if(!p.on||!p.pinned||p.cat==="stay"||used[p.id])return;
+    if(p.lat==null&&p.area==="待分類"){out.push({p:p,why:"還沒設定位置，無法判斷順不順路"});return;}
+    var c=coordOf(p),m=999,ref=null;cs.forEach(function(x){var t=travel(x.c,c);if(t<m){m=t;ref=x;}});
+    if(!ref){out.push({p:p,why:"還沒排行程"});return;}
+    out.push({p:p,why:m<=22?"順路，但那天的時段已經排滿":"離 Day "+ref.d+" 的活動範圍約 "+m+" 分鐘，硬排會折返"});});
+  return out;}
+function lostHtml(){var l=lostList();if(!l.length)return "";
+  return '<details class="panel lostbox" id="lostD"'+(state.lostOpen?' open':'')+'><summary><b>這次沒排進去的釘選（'+l.length+'）</b> <span class="hint">點開查看</span></summary><div class="lostl">'+l.map(function(o){return '<div class="lr"><b>'+esc(o.p.name)+'</b><span>'+esc(o.why)+'</span></div>';}).join("")+'</div><p class="hint">想去哪間，到「我的清單」按「必去」，再按「換一種排法」。</p></details>';}
+function planTools(){
+  var filled=0;
+  for(var d=1;d<=3;d++)(state.plan[d]||[]).forEach(function(s){if(slotItem(s))filled++;});
+  if(!filled)return '<div class="panel"><h2>先給我一份建議行程</h2><p class="hint">依你的釘選、Google 評分和距離，幫你排好三天，同一天盡量待在同一區。</p><div class="row"><button class="btn" data-act="auto">排一份建議行程</button></div></div>';
+  return '<div class="row"><button class="btn sm" data-act="alt">整份行程換一組排法</button></div>';
+}
+function dayTips(d){
+  var sl=state.plan[d]||[],cur=(d===1&&state.set.direct!==false)?AIRPORT:hotelC(),tot=0,areas={},filled=0,empty=0,sight=0;
+  sl.forEach(function(s){if(s.st)return;var it=slotItem(s);if(!it){empty++;return;}filled++;tot+=travel(cur,it.c);if(it.c)cur=it.c;if(it.area)areas[it.area]=1;if(it.p&&(it.p.cat==="sight"||it.p.cat==="night"||it.p.cat==="shop"))sight++;});
+  if(filled)tot+=travel(cur,hotelC());
+  var out=[],na=Object.keys(areas).length;
+  if(tot>150)out.push("今天移動約 "+tot+" 分鐘，偏多。可以把幾站換成同一區的店。");
+  if(na>=4)out.push("今天跨了 "+na+" 個區域，建議集中在 2 到 3 區。");
+  if(filled>=3&&sight===0)out.push("今天幾乎都是吃喝，可以加一個景點或逛街的地方。");
+  if(empty)out.push("還有 "+empty+" 段沒排。點該段選一個，或請 AI 補充。");
+  return out;}
+async function aiGap(){
+  if(!sampleFn||busy.gap)return;
+  var HL={food:"正餐",cafe:"咖啡甜點或休息",sight:"景點或散步",night:"夜景或夜間活動"},rows=[],keys=[],planned=[];
+  for(var d=1;d<=3;d++){(state.plan[d]||[]).forEach(function(s,i){var it=slotItem(s);if(it){planned.push(it.name);return;}if(s.st)return;var an=anchorFor(d,i);keys.push([d,i]);rows.push((keys.length-1)+": 第"+d+"天"+s.label+"，約 "+fmt(s.t)+"，想要："+(HL[s.hint]||s.hint)+"，前一站：「"+an.name+"」");});}
+  if(!rows.length)return;
+  busy.gap=true;render();
+  var prompt="旅客在釜山三天兩夜，住在"+state.set.hotelArea+"。已排的有："+(planned.join("、")||"無")+"。\n以下空檔還沒決定，請每一個推薦 1 個你確定存在、評價普遍不錯的店或景點，地點盡量在前一站附近，且不要重複已排的。不確定是否存在或營業就不要推薦。\n"
+   +'只回 JSON 陣列：[{"n":0,"name":"店名","area":"區域","cat":"food|cafe|sight|shop|night|rest","why":"一句理由"}]。area 只能是：'+Object.keys(AREAS).join("、")+'，不確定填空字串。\n\n'+rows.join("\n");
+  try{
+    var r=await sampleFn.json(prompt,{cache:false}),c=0;
+    (Array.isArray(r)?r:[]).forEach(function(x){var k=keys[+x.n];if(!k||!x.name)return;var s=state.plan[k[0]][k[1]];if(slotItem(s))return;
+      s.pid=null;s.c={name:String(x.name).slice(0,60),area:AREAS[x.area]?x.area:"",cat:CATS[x.cat]?x.cat:"",hl:String(x.why||"").slice(0,60)};s.why="AI 建議，請在 Google 地圖確認";c++;});
+    save();toast(c?"已補上 "+c+" 個空缺":"這次沒有合適的建議");
+  }catch(e){toast(errCopy(e)||"AI 沒有回應");}
+  busy.gap=false;render();
+}
+
+/* map */
+var DAYC={1:"var(--d1)",2:"var(--d2)",3:"var(--d3)"};
+function dayStops(d){var out=[],sl=state.plan[d]||[],n=0;sl.forEach(function(s,i){if(s.st)return;var it=slotItem(s);if(!it||!it.c)return;n++;out.push({d:d,i:i,n:n,s:s,it:it});});return out;}
+function cs(c){return c[0].toFixed(5)+","+c[1].toFixed(5);}
+function dirUrl(d){var st=dayStops(d);if(!st.length)return "";
+  var wp=st.map(function(x){return cs(x.it.c);}).slice(0,9).join("|");
+  return "https://www.google.com/maps/dir/?api=1&origin="+cs(startC(d))+"&destination="+cs(hotelC())+"&waypoints="+encodeURIComponent(wp);}
+function planDayOf(pid){for(var d=1;d<=3;d++){var sl=state.plan[d]||[];for(var i=0;i<sl.length;i++)if(sl[i].pid===pid)return d;}return 0;}
+function addToDay(pid,d){
+  var p=placeById(pid);if(!p)return;
+  if(p.cat==="stay"){toast("這是住宿或交通，不排進行程");return;}
+  var sl=state.plan[d]||(state.plan[d]=[]),c=coordOf(p),bi=-1,bm=1e9;
+  sl.forEach(function(s,i){if(s.st)return;var it=slotItem(s);if(it&&it.c){var m=travel(it.c,c);if(m<bm){bm=m;bi=i;}}});
+  var hint=p.cat==="food"?"food":(p.cat==="cafe"?"cafe":(p.cat==="night"?"night":"sight"));
+  sl.splice(bi+1,0,{k:"x"+Date.now(),t:0,label:KLAB[p.cat]||"景點",hint:hint,pid:pid,c:null,st:"",why:"從地圖加入"});
+  save();toast("已加入 Day "+d+"，後面的時間自動順延");render();}
+function nearby(days){
+  var stopsC=[],used=usedIds();
+  days.forEach(function(d){dayStops(d).forEach(function(x){stopsC.push({c:x.it.c,d:d,n:x.n});});});
+  if(!stopsC.length)return [];
+  var out=[];
+  state.places.forEach(function(p){
+    if(!p.on||used[p.id]||p.cat==="stay")return;
+    var c=coordOf(p);if(!c||(p.lat==null&&p.area==="待分類"))return;
+    var mt=999,ref=null;stopsC.forEach(function(x){var t=travel(x.c,c);if(t<mt){mt=t;ref=x;}});
+    if(mt<=20)out.push({p:p,mt:mt,ref:ref,sc:(p.pinned?3:0)+quality(p)-mt/12});
+  });
+  return out.sort(function(a,b){return b.sc-a.sc;}).slice(0,5);}
+function tw(t){var w=0,i;for(i=0;i<t.length;i++)w+=t.charCodeAt(i)>255?11.5:6.3;return w;}
+function shortN(n){n=n.replace(/\(.*?\)/g,"").replace(/（.*?）/g,"").trim();return n.length>14?n.slice(0,13)+"…":n;}
+function nearAn(d,c){var best={c:hotelC(),name:"飯店"},bm=travel(best.c,c);dayStops(d).forEach(function(x){var m=travel(x.it.c,c);if(m<bm){bm=m;best={c:x.it.c,name:x.it.name};}});return best;}
+var MIW=2318,MIH=2407,M_PPD=8726,M_R=M_PPD*180/Math.PI,M_LON0=128.98334,M_LATT=35.24911;
+function mercY(la){return Math.log(Math.tan(Math.PI/4+la*Math.PI/360));}
+function mpx(c){return {x:(c[1]-M_LON0)*M_PPD,y:(mercY(M_LATT)-mercY(c[0]))*M_R};}
+/* ===== vector basemap (OpenStreetMap data via Protomaps, ODbL) ===== */
+var VT={},VQ={},VTS=360/16384*M_PPD,VX0=14062,VX1=14074,VY0=6475,VY1=6488;
+function vtOrigin(tx,ty){return {x:((tx/16384)*360-180-M_LON0)*M_PPD,y:(mercY(M_LATT)-Math.PI*(1-2*ty/16384))*M_R};}
+function vtDec(a,x0,y0){var o=[],x=x0||0,y=y0||0;for(var i=0;i<a.length;i+=2){x+=a[i];y+=a[i+1];o.push(x,y);}return o;}
+function vtPathLine(p,a){var q=vtDec(a);p.moveTo(q[0],q[1]);for(var i=2;i<q.length;i+=2)p.lineTo(q[i],q[i+1]);}
+function vtPathPoly(p,rings){rings.forEach(function(r){var q=vtDec(r);p.moveTo(q[0],q[1]);for(var i=2;i<q.length;i+=2)p.lineTo(q[i],q[i+1]);p.closePath();});}
+function vtBuild(raw){
+  var T={w:new Path2D(),wl0:new Path2D(),wl1:new Path2D(),g:{},b:new Path2D(),r:{},names:[],pts:raw.n||[]};
+  raw.w.forEach(function(P){vtPathPoly(T.w,P);});
+  raw.wl.forEach(function(l){vtPathLine(l[0]?T.wl1:T.wl0,l[1]);});
+  raw.g.forEach(function(g){var p=T.g[g[0]]||(T.g[g[0]]=new Path2D());vtPathPoly(p,g[1]);});
+  raw.b.forEach(function(P){vtPathPoly(T.b,P);});
+  raw.r.forEach(function(r){var k=r[0]+((r[1]&2)?20:0),p=T.r[k]||(T.r[k]=new Path2D());vtPathLine(p,r[3]);
+    if(r[2]&&r[0]<=4&&!(r[1]&1)){var q=vtDec(r[3]);if(q.length>=4)T.names.push({n:r[2],c:r[0],q:q});}});
+  return T;
+}
+var VALLP=null;function vtLoad(tx,ty,done){var k=tx+"_"+ty;if(VT[k]||VQ[k])return;if(tx<VX0||tx>VX1||ty<VY0||ty>VY1){VT[k]=false;return;}VQ[k]=1;
+  (VALLP||(VALLP=fetch("maps/vall.json").then(function(r){return r.json();}))).then(function(all){VT[k]=all[k]?vtBuild(all[k]):false;delete VQ[k];done();}).catch(function(){VT[k]=false;delete VQ[k];done();});}
+var VG={1:"#c8e1b0",9:"#e6efd0",10:"#d3ecd0",2:"#e9e5c9",3:"#e9dde8",4:"#f4dcd7",5:"#e4dfd6",7:"#f6e9c4"};
+var VRC=[["#e9a35a","#f5c07a",14,2.6],["#f0b95e","#fbd98f",11,2.3],["#f3d36c","#fdf0a2",9,2.0],["#d9d4cb","#ffffff",7,1.7],["#d9d4cb","#ffffff",5.5,1.3],["#dcd7ce","#ffffff",3.6,.9],["#e9a3a0","#e9a3a0",1.3,.7]];
+function vtDraw(cv,c,v,onNeed){
+  var dpr=Math.min(window.devicePixelRatio||1,3),cw=c.clientWidth,ch=c.clientHeight;
+  if(cv.width!==Math.round(cw*dpr)||cv.height!==Math.round(ch*dpr)){cv.width=Math.round(cw*dpr);cv.height=Math.round(ch*dpr);}
+  var ctx=cv.getContext("2d");ctx.setTransform(1,0,0,1,0,0);ctx.fillStyle="#f2efe9";ctx.fillRect(0,0,cv.width,cv.height);
+  var ppu=v.z*VTS/4096,tp=VTS*v.z;
+  var bx0=(-v.x)/v.z,by0=(-v.y)/v.z,bx1=(cw-v.x)/v.z,by1=(ch-v.y)/v.z;
+  var tl=(bx0/VTS)+((M_LON0+180)/360)*16384, tr=(bx1/VTS)+((M_LON0+180)/360)*16384;
+  var oy=vtOrigin(0,0).y/VTS; /* tile y of base px 0 : ty=-oy + by/VTS */
+  var ty0=Math.floor(by0/VTS-oy),ty1=Math.floor(by1/VTS-oy),tx0=Math.floor(tl),tx1=Math.floor(tr);
+  var list=[],ready=true;
+  for(var x=tx0;x<=tx1;x++)for(var y=ty0;y<=ty1;y++){var k=x+"_"+y,t=VT[k];if(t===undefined){ready=false;vtLoad(x,y,onNeed);}else if(t)list.push({t:t,x:x,y:y});}
+  if(!list.length&&!ready)return false;
+  var mpp=v.z*0.0959;/* px per metre */
+  function setT(L){var o=vtOrigin(L.x,L.y);ctx.setTransform(dpr*ppu,0,0,dpr*ppu,dpr*(v.x+v.z*o.x),dpr*(v.y+v.z*o.y));L.ox=v.x+v.z*o.x;L.oy=v.y+v.z*o.y;}
+  var pxw=function(w){return w/ppu;};
+  ctx.lineJoin="round";ctx.lineCap="round";
+  list.forEach(function(L){setT(L);var T=L.t;
+    [1,9,10,2,3,4,5,7].forEach(function(cl){if(T.g[cl]){ctx.fillStyle=VG[cl];ctx.fill(T.g[cl],"evenodd");}});});
+  list.forEach(function(L){setT(L);var T=L.t;ctx.fillStyle="#aad3df";ctx.fill(T.w,"evenodd");
+    ctx.strokeStyle="#aad3df";ctx.lineWidth=pxw(Math.max(.8,2*mpp));ctx.stroke(T.wl0);ctx.lineWidth=pxw(Math.max(1.5,10*mpp));ctx.stroke(T.wl1);});
+  var minC=v.z<0.55?3:(v.z<1.0?4:(v.z<1.6?5:6));
+  function roads(bridge){
+    for(var pass=0;pass<2;pass++){
+      for(var c=minC;c>=0;c--){var r=VRC[c],w=Math.max(r[3],r[2]*mpp);
+        list.forEach(function(L){var p=L.t.r[c+(bridge?20:0)];if(!p)return;setT(L);
+          if(pass===0){if(c===6)return;ctx.strokeStyle=r[0];ctx.lineWidth=pxw(w+1.4);ctx.setLineDash([]);ctx.stroke(p);}
+          else{ctx.strokeStyle=r[1];ctx.lineWidth=pxw(c===6?w:w);if(c===6)ctx.setLineDash([pxw(3),pxw(2)]);else ctx.setLineDash([]);ctx.stroke(p);}});}
+    }ctx.setLineDash([]);}
+  if(v.z>=1.2)list.forEach(function(L){setT(L);ctx.fillStyle="#d9d0c9";ctx.strokeStyle="#c4b7ab";ctx.lineWidth=pxw(.6);ctx.fill(L.t.b,"evenodd");ctx.stroke(L.t.b);});
+  roads(false);roads(true);
+  /* rail */
+  list.forEach(function(L){var p=L.t.r[7];if(p&&v.z>=.5){setT(L);ctx.strokeStyle="#b8b8b8";ctx.lineWidth=pxw(1);ctx.setLineDash([pxw(5),pxw(4)]);ctx.stroke(p);ctx.setLineDash([]);}
+    p=L.t.r[8];if(p&&v.z>=.8){setT(L);ctx.strokeStyle="#b69ad6";ctx.lineWidth=pxw(1.2);ctx.setLineDash([pxw(4),pxw(3)]);ctx.stroke(p);ctx.setLineDash([]);}});
+  /* labels */
+  ctx.setTransform(dpr,0,0,dpr,0,0);ctx.textAlign="center";ctx.textBaseline="middle";ctx.lineJoin="round";
+  var FF='"Noto Sans KR","Malgun Gothic","Apple SD Gothic Neo","Noto Sans CJK KR",sans-serif',boxes=[];
+  function free(x,y,w,h){for(var i=0;i<boxes.length;i++){var b=boxes[i];if(x-w/2<b[2]&&x+w/2>b[0]&&y-h/2<b[3]&&y+h/2>b[1])return false;}boxes.push([x-w/2,y-h/2,x+w/2,y+h/2]);return true;}
+  function lab(txt,x,y,font,col,rot){ctx.font=font;var w=ctx.measureText(txt).width;if(x<-50||y<-20||x>cw+50||y>ch+20)return;if(!free(x,y,w+4,14))return;
+    ctx.save();ctx.translate(x,y);if(rot)ctx.rotate(rot);ctx.lineWidth=3;ctx.strokeStyle="rgba(255,255,255,.88)";ctx.strokeText(txt,0,0);ctx.fillStyle=col;ctx.fillText(txt,0,0);ctx.restore();}
+  if(v.z>=.7)list.forEach(function(L){L.t.pts.forEach(function(p){if(p[3]!=="p")return;lab(p[0],L.ox+v.z*0+p[1]*ppu,L.oy+p[2]*ppu,"600 "+(v.z<1.5?11:13)+"px "+FF,"#6b5b4a");});});
+  if(v.z>=2.4){var seen={};list.forEach(function(L){L.t.names.forEach(function(r){if(r.c>4&&v.z<4)return;if(r.c>3&&v.z<3.2)return;
+    var q=r.q,best=0,bi=0,tot=0;for(var i=0;i<q.length-2;i+=2){var d=Math.hypot(q[i+2]-q[i],q[i+3]-q[i+1]);tot+=d;if(d>best){best=d;bi=i;}}
+    var sx=(q[bi]+q[bi+2])/2*ppu+L.ox,sy=(q[bi+1]+q[bi+3])/2*ppu+L.oy,seg=best*ppu;ctx.font="500 11px "+FF;var tw=ctx.measureText(r.n).width;
+    if(seg<tw+10)return;var ang=Math.atan2(q[bi+3]-q[bi+1],q[bi+2]-q[bi]);if(ang>Math.PI/2)ang-=Math.PI;if(ang<-Math.PI/2)ang+=Math.PI;
+    var key=r.n+Math.round(sx/150)+Math.round(sy/150);if(seen[key])return;if(sx<-30||sy<-30||sx>cw+30||sy>ch+30)return;seen[key]=1;lab(r.n,sx,sy,"500 11px "+FF,"#555",ang);});});}
+  if(v.z>=3.6)list.forEach(function(L){L.t.pts.forEach(function(p){if(p[3]==="p")return;var X=L.ox+p[1]*ppu,Y=L.oy+p[2]*ppu;if(X<0||Y<0||X>cw||Y>ch)return;
+    ctx.beginPath();ctx.arc(X,Y,2.4,0,6.3);ctx.fillStyle="#8d7ab5";ctx.fill();lab(p[0],X,Y+10,"500 11px "+FF,"#6b4f8a");});});
+  return ready;
+}
+
+var mvView=null;
+function regionList(){var g={};state.places.forEach(function(p){if(!p.on||p.lat==null||!p.area||p.cat==="stay")return;(g[p.area]||(g[p.area]={a:p.area,la:0,lo:0,n:0}));var r=g[p.area];r.la+=p.lat;r.lo+=p.lng;r.n++;});
+  return Object.keys(g).map(function(k){var r=g[k];return {a:r.a,la:r.la/r.n,lo:r.lo/r.n,n:r.n};}).sort(function(a,b){return b.n-a.n;});}
+function viewMap(){
+  var d=state.mapDay||1;if(d<1||d>3)d=1;
+  var sel=state.mapSel,pm={},days=[1,2,3],h="",mk="",leg="",sig;
+  days.forEach(function(dd){dayStops(dd).forEach(function(x){if(x.it.p)pm[x.it.p.id]={d:dd,n:x.n};});});
+  var st=dayStops(d);
+  sig=d+":"+st.map(function(x){return x.it.p?x.it.p.id:x.it.name;}).join(",");
+  if(!mvView||mvView.sig!==sig){mvView={sig:sig,fit:true};}
+  var nbs=nearby([d]).slice(0,5),L="ABCDE",nbi={};nbs.forEach(function(o,k){nbi[o.p.id]=L[k];});
+  /* unplanned pinned places */
+  state.places.forEach(function(p){
+    if(!p.on||!p.pinned||p.cat==="stay"||pm[p.id]||p.lat==null)return;
+    var q=mpx([p.lat,p.lng]);
+    mk+='<button class="mk un'+(sel===p.id?' sel':'')+(nbi[p.id]?' nb':'')+'" data-act="mapsel" data-id="'+esc(p.id)+'" style="left:'+q.x.toFixed(1)+'px;top:'+q.y.toFixed(1)+'px">'+(nbi[p.id]||"")+'<span class="lb">'+esc(shortN(p.name))+'</span></button>';});
+  /* other days */
+  days.forEach(function(dd){if(dd===d)return;dayStops(dd).forEach(function(x){var q=mpx(x.it.c),pid=x.it.p?x.it.p.id:"";
+    mk+='<button class="mk od'+(sel===pid?' sel':'')+'" data-act="mapsel" data-id="'+esc(pid)+'" style="left:'+q.x.toFixed(1)+'px;top:'+q.y.toFixed(1)+'px;--c:'+DAYC[dd]+'">'+x.n+'<span class="lb">D'+dd+' '+esc(shortN(x.it.name))+'</span></button>';});});
+  /* current day */
+  var pts=[];
+  st.forEach(function(x,i){var q=mpx(x.it.c),pid=x.it.p?x.it.p.id:"";x.q=q;pts.push(q);
+    mk+='<button class="mk cur'+(sel===pid?' sel':'')+'" data-act="mapsel" data-id="'+esc(pid)+'" style="left:'+q.x.toFixed(1)+'px;top:'+q.y.toFixed(1)+'px;--c:'+DAYC[d]+'">'+x.n+'<span class="lb">'+esc(shortN(x.it.name))+'</span></button>';
+    if(i>0){var a=st[i-1].q;mk+='<span class="leg" style="left:'+((a.x+q.x)/2).toFixed(1)+'px;top:'+((a.y+q.y)/2).toFixed(1)+'px">'+travel(st[i-1].it.c,x.it.c)+'分</span>';}});
+  var hc=hotelC(),hq=mpx(hc);
+  mk+='<span class="mk ho" style="left:'+hq.x.toFixed(1)+'px;top:'+hq.y.toFixed(1)+'px">宿<span class="lb">飯店</span></span>';
+  var ap=(d===1&&state.set.direct!==false)?mpx(AIRPORT):null;
+  var poly=pts.length>1?'<polyline fill="none" stroke="#fff" style="stroke-width:calc(var(--ik)*5px)" stroke-linejoin="round" stroke-linecap="round" points="'+pts.map(function(p){return p.x.toFixed(1)+","+p.y.toFixed(1);}).join(" ")+'"/><polyline fill="none" stroke="'+DAYC[d]+'" style="stroke-width:calc(var(--ik)*2.5px);stroke-dasharray:calc(var(--ik)*8px) calc(var(--ik)*6px)" stroke-linejoin="round" stroke-linecap="round" points="'+pts.map(function(p){return p.x.toFixed(1)+","+p.y.toFixed(1);}).join(" ")+'"/>':"";
+  var fitPts=pts.slice();if(!fitPts.length)fitPts=[hq];
+  var box='<div class="mv" id="mv" data-fit="'+fitPts.map(function(p){return Math.round(p.x)+","+Math.round(p.y);}).join(";")+'"><div class="mvi" id="mvi"><img src="maps/busan.jpg" width="'+MIW+'" height="'+MIH+'" alt="釜山地圖" draggable="false"/>'+DET.map(function(d){var q=mpx([d[2],d[1]]);return '<img class="dt" src="'+d[0]+'" style="left:'+(q.x-87).toFixed(1)+'px;top:'+(q.y-117.6).toFixed(1)+'px;width:174px" alt="" draggable="false"/>';}).join("")+DET2.map(function(d){var q=mpx([d[2],d[1]]);return '<img class="dt dt2" data-src="'+d[0]+'" style="left:'+(q.x-44.4).toFixed(1)+'px;top:'+(q.y-58.8).toFixed(1)+'px;width:88.8px" alt="" draggable="false"/>';}).join("")+DET4.map(function(d){var q=mpx([d[2],d[1]]);return '<img class="dt dt2" data-src="'+d[0]+'" style="left:'+(q.x-44.938).toFixed(1)+'px;top:'+(q.y-58.812).toFixed(1)+'px;width:89.875px" alt="" draggable="false"/>';}).join("")+DET3.map(function(d){var q=mpx([d[2],d[1]]);return '<img class="dt dt3" data-src="'+d[0]+'" style="left:'+(q.x-14.3934).toFixed(2)+'px;top:'+(q.y-14.5553).toFixed(2)+'px;width:28.7868px" alt="" draggable="false"/>';}).join("")+DET5.map(function(d){var q=mpx([d[2],d[1]]);return '<img class="dt dt3" data-src="'+d[0]+'" style="left:'+(q.x-11.2344).toFixed(2)+'px;top:'+(q.y-14.7031).toFixed(2)+'px;width:22.4688px" alt="" draggable="false"/>';}).join("")+'<svg width="'+MIW+'" height="'+MIH+'" viewBox="0 0 '+MIW+' '+MIH+'">'+poly+'</svg>'+mk+'</div>'
+    +'<div class="mvc"><button data-mv="in" aria-label="放大">＋</button><button data-mv="out" aria-label="縮小">－</button><button data-mv="fit" aria-label="對準今天">◎</button><button data-mv="all" aria-label="全圖">全</button></div><div class="mvat">© OpenStreetMap contributors</div></div>';
+  h='<div class="stack"><div class="days">'+days.map(function(n){return '<button class="chip" data-act="mapday" data-v="'+n+'" aria-pressed="'+(d===n)+'">Day '+n+'</button>';}).join("")+'</div>';
+  h+='<div class="panel"><div class="row" style="justify-content:space-between"><h2 style="margin:0">釜山地圖 · Day '+d+'</h2><button class="sw" data-act="maprefresh">↻ 重整</button></div>'+box
+    +'<div class="hint" style="margin:8px 0 4px">分區看（每區放大到最清楚的程度）</div><div class="chips">'+regionList().map(function(r,i){return '<button class="chip" data-act="region" data-v="'+i+'">'+esc(r.a)+'</button>';}).join("")+'</div>'
+    +'<div class="mapkey"><span><i style="background:'+DAYC[d]+'">1</i> 今天的順序</span><span><i class="box">宿</i> 飯店</span><span><i class="ring">A</i> 附近還沒排的店</span><span><i class="dot"></i> 其他沒排的釘選</span></div>'
+    +'<p class="hint">拖曳移動，雙指或滾輪縮放，最高約 40 倍；放大後會顯示所有店名。店家周圍有更精細的街道圖。點標記看資訊並可加進行程。</p></div>';
+  if(sel){var sp=placeById(sel);if(sp){var inD=planDayOf(sp.id),sc2=coordOf(sp);
+    h+='<div class="panel"><div><b>'+esc(sp.name)+'</b></div><div class="hint">'+esc(CATS[sp.cat]||"")+' · '+esc(sp.area)+(sp.hl?' · '+esc(sp.hl):"")+'</div><div class="hint">'+esc(hrsText(sp))+'</div><div class="row">'+(sp.pinned?'<span class="tag pin">你的釘選</span>':'<span class="tag">補充推薦</span>')+'<a class="map" href="'+mapsUrl(sp.name)+'" target="_blank" rel="noopener">Google 地圖</a>'+(sc2?'<a class="map" href="'+naverDir(nearAn(d,sc2),sp.name,sc2)+'" target="_blank" rel="noopener">Naver 導航</a>':"")+'</div>'
+      +(inD?'<div class="hint">已排在 Day '+inD+'</div>':'<div class="row">'+[1,2,3].map(function(n){return '<button class="btn sm" data-act="addto" data-id="'+esc(sp.id)+'" data-d="'+n+'">加到 Day '+n+'</button>';}).join("")+'</div>')
+      +'<div><button class="sw" data-act="mapclose">關閉</button></div></div>';}}
+  if(st.length){
+    h+='<div class="panel"><b style="color:'+DAYC[d]+'">Day '+d+' 順序</b><div>'
+      +st.map(function(x){var an=anchorFor(d,x.i);
+        return '<div class="lg"><span class="dotn" style="background:'+DAYC[d]+'">'+x.n+'</span><div class="t"><b>'+esc(x.it.name)+'</b><div class="hint">約 '+fmt(x.s.t)+' · '+esc(modeText(an.c,x.it.c))+'（從'+esc(an.name)+'）</div><div class="hint"><a class="map" href="'+naverDir(an,x.it.name,x.it.c,d,x.s.t)+'" target="_blank" rel="noopener">'+naverTxt(d,x.s.t)+'</a> · <a class="map" href="'+mapsUrl(x.it.name)+'" target="_blank" rel="noopener">Google 地圖</a></div></div></div>';}).join("")+'</div></div>';
+  }else h+='<div class="panel"><p class="hint">Day '+d+' 還沒有排好的站。到「行程」按「排一份建議行程」。</p></div>';
+  if(nbs.length)h+='<div class="panel"><h2>這條路線附近還有</h2>'+nbs.map(function(o){
+    return '<div class="lg"><span class="dotn" style="background:#fff;color:#1b1b1b;border:2px solid #1b1b1b">'+nbi[o.p.id]+'</span><div class="t"><b>'+esc(o.p.name)+'</b><div class="hint">'+esc(CATS[o.p.cat]||"")+' · 離第 '+o.ref.n+' 站約 '+o.mt+' 分鐘'+(o.p.pinned?' · 你的釘選':' · 補充推薦')+'</div></div><button class="sw" data-act="addto" data-id="'+esc(o.p.id)+'" data-d="'+d+'">加入</button></div>';}).join("")+'</div>';
+  h+='</div>';
+  return h;}
+function initMV(){
+  var c=document.getElementById("mv"),inner=document.getElementById("mvi");if(!c||!inner)return;
+  var cw=c.clientWidth,ch=c.clientHeight,zmin=Math.min(cw/MIW,ch/MIH),zmax=64;
+  var v=mvView;
+  var cv=c.querySelector('#vmap');if(!cv){cv=document.createElement('canvas');cv.id='vmap';c.insertBefore(cv,c.firstChild);}var vq=0;
+  function vdraw(){if(vq)return;vq=requestAnimationFrame(function(){vq=0;var ok=false;try{ok=vtDraw(cv,c,v,vdraw);}catch(e){ok=false;console.error(e.message);}c.classList.toggle('vec',!!ok);});}
+  function clamp(){v.z=Math.max(zmin,Math.min(zmax,v.z));var w=MIW*v.z,hh=MIH*v.z;v.x=w<=cw?(cw-w)/2:Math.min(0,Math.max(cw-w,v.x));v.y=hh<=ch?(ch-hh)/2:Math.min(0,Math.max(ch-hh,v.y));}
+  function lazy2(){var cr=c.getBoundingClientRect();c.querySelectorAll('img.dt2[data-src],img.dt3[data-src]').forEach(function(im){var r=im.getBoundingClientRect();if(r.right>cr.left-200&&r.left<cr.right+200&&r.bottom>cr.top-200&&r.top<cr.bottom+200){im.src=im.getAttribute('data-src');im.removeAttribute('data-src');}});}
+  function apply(){clamp();inner.style.transform="translate("+v.x+"px,"+v.y+"px) scale("+v.z+")";inner.style.setProperty("--ik",String(1/v.z));c.classList.toggle("zl",v.z>=1.6);c.classList.toggle("zd",v.z>=1.5);c.classList.toggle("zd2",v.z>=2.4);c.classList.toggle("zd3",v.z>=2.4);if(v.z>=2.2)lazy2();c.classList.toggle("zm",v.z>=0.7);vdraw();declutter();}
+  var dcT=0;function declutter(){if(dcT)return;dcT=setTimeout(function(){dcT=0;var ms=[].slice.call(c.querySelectorAll(".mk")),rs=[],pr=function(m){return m.classList.contains("sel")?0:m.classList.contains("cur")?1:m.classList.contains("ho")?2:m.classList.contains("nb")?3:m.classList.contains("un")?4:5;};ms.sort(function(a,b){return pr(a)-pr(b);});ms.forEach(function(m){var lb=m.querySelector(".lb");if(!lb)return;lb.style.visibility="";if(getComputedStyle(lb).display==="none")return;var r=lb.getBoundingClientRect(),hit=rs.some(function(q){return !(r.right<q.left||r.left>q.right||r.bottom<q.top||r.top>q.bottom);});if(hit){lb.style.visibility="hidden";}else rs.push(r);});},60);}
+  function fit(){var ps=(c.getAttribute("data-fit")||"").split(";").map(function(s){var a=s.split(",");return {x:+a[0],y:+a[1]};}).filter(function(p){return !isNaN(p.x);});
+    var x0=1e9,x1=-1e9,y0=1e9,y1=-1e9;ps.forEach(function(p){x0=Math.min(x0,p.x);x1=Math.max(x1,p.x);y0=Math.min(y0,p.y);y1=Math.max(y1,p.y);});
+    var bw=Math.max(x1-x0,300),bh=Math.max(y1-y0,300);v.z=Math.min(cw/(bw+160),ch/(bh+160),1.3);v.z=Math.max(v.z,zmin);
+    v.x=cw/2-((x0+x1)/2)*v.z;v.y=ch/2-((y0+y1)/2)*v.z;}
+  if(v.fit||v.z==null){fit();v.fit=false;}
+  if(v.rgn){var rq=mpx([v.rgn.la,v.rgn.lo]);v.z=v.rgn.z;v.x=cw/2-rq.x*v.z;v.y=ch/2-rq.y*v.z;v.rgn=null;}
+  apply();
+  function zoomAt(f,px,py){var nz=Math.max(zmin,Math.min(zmax,v.z*f));f=nz/v.z;v.x=px-(px-v.x)*f;v.y=py-(py-v.y)*f;v.z=nz;apply();}
+  var ptrs={},moved=false,last=null,pd=0;
+  c.addEventListener("pointerdown",function(e){if(e.target.closest(".mvc"))return;ptrs[e.pointerId]={x:e.clientX,y:e.clientY};moved=false;last=null;try{c.setPointerCapture(e.pointerId);}catch(x){}});
+  c.addEventListener("pointermove",function(e){var p=ptrs[e.pointerId];if(!p)return;var ids=Object.keys(ptrs);
+    if(ids.length===1){var dx=e.clientX-p.x,dy=e.clientY-p.y;if(Math.abs(dx)+Math.abs(dy)>0){if(moved||Math.abs(dx)+Math.abs(dy)>4){moved=true;v.x+=dx;v.y+=dy;apply();}}p.x=e.clientX;p.y=e.clientY;}
+    else if(ids.length===2){p.x=e.clientX;p.y=e.clientY;var a=ptrs[ids[0]],b=ptrs[ids[1]],dist=Math.hypot(a.x-b.x,a.y-b.y),r=c.getBoundingClientRect();moved=true;if(pd>0)zoomAt(dist/pd,(a.x+b.x)/2-r.left,(a.y+b.y)/2-r.top);pd=dist;}});
+  function up(e){delete ptrs[e.pointerId];pd=0;}
+  c.addEventListener("pointerup",up);c.addEventListener("pointercancel",up);
+  c.addEventListener("click",function(e){if(moved){e.stopPropagation();e.preventDefault();moved=false;}},true);
+  c.addEventListener("wheel",function(e){e.preventDefault();var r=c.getBoundingClientRect();zoomAt(e.deltaY<0?1.25:1/1.25,e.clientX-r.left,e.clientY-r.top);},{passive:false});
+  c.querySelectorAll("[data-mv]").forEach(function(b){b.addEventListener("click",function(e){e.stopPropagation();var k=b.getAttribute("data-mv");
+    if(k==="in")zoomAt(1.7,cw/2,ch/2);else if(k==="out")zoomAt(1/1.7,cw/2,ch/2);else if(k==="fit"){fit();apply();}else{v.z=zmin;v.x=0;v.y=0;apply();}});});
+}
+
+/* toast */
+var tt=null;
+function toast(m){var t=document.getElementById("toast");t.textContent=m;t.hidden=false;clearTimeout(tt);tt=setTimeout(function(){t.hidden=true;},2200);}
+
+document.addEventListener("toggle",function(e){if(e.target&&e.target.id==="lostD"){state.lostOpen=e.target.open;save();}if(e.target&&e.target.id==="d1D"){state.d1Open=e.target.open;save();}},true);
+/* events */
+document.addEventListener("click",function(e){try{clickH(e);}catch(err){showErr(err);}});
+function clickH(e){
+  var el=e.target.closest("[data-act]");if(!el)return;
+  var a=el.getAttribute("data-act"),d=+el.getAttribute("data-d"),i=+el.getAttribute("data-i"),v=el.getAttribute("data-v");
+  if(el.tagName==="A")return;
+  if(a==="tab"){state.tab=v;save();render();window.scrollTo(0,0);}
+  else if(a==="day"){state.day=+v;save();render();}
+  else if(a==="open"){var sl0=state.plan[d][i];sheet={d:d,i:i,mood:sl0.hint==="food"?"eat":(sl0.hint==="cafe"?"cafe":(sl0.hint==="night"?"night":"any")),src:"mine",offset:0,ai:null,aiSeen:[],busy:false,err:""};
+    renderSheet();}
+  else if(a==="close"){sheet=null;renderSheet();}
+  else if(a==="mood"){sheet.mood=v;sheet.offset=0;sheet.ai=null;sheet.err="";renderSheet();}
+  else if(a==="src"){sheet.src=v;renderSheet();}
+  else if(a==="pick"){var sl=state.plan[sheet.d][sheet.i];sl.pid=el.getAttribute("data-id");sl.c=null;sl.st="";sl.why="";sheet=null;save();render();toast("已排進行程");}
+  else if(a==="pickAI"){var x=sheet.ai[+el.getAttribute("data-n")],s2=state.plan[sheet.d][sheet.i];s2.pid=null;s2.c={name:String(x.name),area:AREAS[x.area]?x.area:"",cat:CATS[x.cat]?x.cat:"",hl:String(x.why||"")};s2.st="";s2.why="";sheet=null;save();render();toast("已排進行程");}
+  else if(a==="pickCustom"){var inp=document.getElementById("customIn"),nm=(inp&&inp.value||"").trim();if(!nm)return;var s3=state.plan[sheet.d][sheet.i];s3.pid=null;s3.c={name:nm,area:"",hl:""};s3.st="";s3.why="";sheet=null;save();render();}
+  else if(a==="ai"){aiSuggest();}
+  else if(a==="rmslot"){var rs=state.plan[d][i];if(String(rs.k).charAt(0)!=="x"){state.del=state.del||{};state.del[d]=state.del[d]||[];state.del[d].push(rs.k);}state.plan[d].splice(i,1);save();render();}
+  else if(a==="addslot"){var arr=state.plan[d]||(state.plan[d]=[]),lt=arr.length?arr[arr.length-1].t+90:Math.max(600,r30(dayWindow(d).start));lt=Math.min(lt,1320);arr.push({k:"x"+Date.now(),t:lt,label:"加碼",hint:"sight",pid:null,c:null,st:"",why:""});save();render();var ni=0;arr.forEach(function(q,qi){if(String(q.k).charAt(0)==="x"&&!q.pid)ni=qi;});sheet={d:d,i:ni,mood:"any",src:"mine",offset:0,ai:null,aiSeen:[],busy:false,err:""};renderSheet();}
+  else if(a==="lostt"){state.lostOpen=!state.lostOpen;save();render();}
+  else if(a==="fotoggle"){state.fo=!state.fo;save();render();}
+  else if(a==="fapply"){applyFriend(+el.getAttribute("data-fi"),d);}
+  else if(a==="addUrl"){var ui=document.getElementById("urlIn");addUrls(ui?ui.value:"").then(function(r){msgUrl=r.msg;render();if(r.added&&sampleFn)classify();});}
+  else if(a==="delPlace"){var dp=state.places[i];if(!dp)return;if(state.delArm!==i){state.delArm=i;render();return;}
+    state.gone=state.gone||{};state.gone[dp.name]=1;for(var dd in state.plan)(state.plan[dd]||[]).forEach(function(q){if(q.pid===dp.id){q.pid=null;q.c=null;q.st="";q.why="";}});
+    state.places.splice(i,1);state.delArm=null;save();render();toast("已刪除「"+dp.name+"」");}
+  else if(a==="shMake"){shareMake().then(function(c){shareCode=c;msgShare="已產生（約 "+Math.round(c.length/1024*10)/10+" KB）。";var ok=false;try{navigator.clipboard.writeText(c).then(function(){msgShare+="已複製到剪貼簿，可直接貼到 LINE。";render();},function(){msgShare+="自動複製失敗，請長按下方文字框全選複製。";render();});ok=true;}catch(e){}if(!ok){msgShare+="請長按下方文字框全選複製。";}render();}).catch(function(e){msgShare="產生失敗："+e.message;render();});}
+  else if(a==="shImport"){var si=document.getElementById("shIn"),tx=si?si.value:"";if(!tx.trim()){msgShare="請先貼上行程代碼。";render();return;}
+    if(!shareArm){shareArm=true;msgShare="";render();var si2=document.getElementById("shIn");if(si2)si2.value=tx;return;}
+    shareArm=false;shareRead(tx).then(function(o){SHK.forEach(function(k){if(o[k]!==undefined)state[k]=o[k];});state.mig6=1;state.mig7=1;state.delArm=null;save();msgShare="已匯入："+o.places.length+" 間景點。";render();}).catch(function(e){msgShare="匯入失敗："+e.message+"。請確認整串代碼都有貼上。";render();});}
+  else if(a==="must"){state.places[i].must=!state.places[i].must;save();render();}
+  else if(a==="toggle"){state.places[i].on=!state.places[i].on;save();render();}
+  else if(a==="clearDemo"){state.places=state.places.filter(function(p){return p.src!=="demo";});state.demo=false;state.plan={};rebuild();save();msgImport="示範資料已清除。";render();}
+  else if(a==="resetDemo"){state.places=state.places.concat(demoPlaces());state.demo=true;save();render();}
+  else if(a==="pasteAdd"){var ta=document.getElementById("pasteIn"),ls=(ta.value||"").split(/\n+/).map(function(x){return x.trim();}).filter(Boolean);
+    var n=addPlaces(ls.map(function(nm){return mk(nm,null,null,"");}));if(n&&state.demo){state.places=state.places.filter(function(p){return p.src!=="demo";});state.demo=false;}
+    msgImport="加入 "+n+" 間店。";save();render();}
+  else if(a==="setHotel"){var hp=state.places[i];state.set.hotelName=hp.name;if(AREAS[hp.area])state.set.hotelArea=hp.area;state.set.hotelCoord=(hp.lat!=null)?[hp.lat,hp.lng]:null;rebuild();save();render();toast("已設為飯店");}
+  else if(a==="qa"){var qn=(document.getElementById("qaName").value||"").trim();if(!qn)return;var qp=mk(qn,null,null,"",document.getElementById("qaCat").value);qp.area=document.getElementById("qaArea").value;qp.indoor=(qp.cat==="food"||qp.cat==="cafe"||qp.cat==="shop");msgImport=addPlaces([qp])?"已新增："+qn:"清單裡已經有「"+qn+"」。";save();render();}
+  else if(a==="dpace"){dset(d).pace=v;state.del=state.del||{};state.del[d]=[];rebuild();autoPlan(false);save();render();}
+  else if(a==="d1opt"){var k1=el.getAttribute("data-k");if(k1==="direct")state.set.direct=(v==="1");else if(k1==="imm")state.set.imm=+v;else if(k1==="transit")state.set.transit=v;
+    var had=(state.plan[1]||[]).some(function(s){return slotItem(s);});rebuild();if(had){(state.plan[1]||[]).forEach(function(s){if(!s.st){s.pid=null;s.c=null;s.why="";}});autoPlan(false);}save();render();}
+  else if(a==="insafter"){var ar3=state.plan[d],nk3="x"+Date.now();ar3.splice(i+1,0,{k:nk3,t:0,label:"加碼",hint:"sight",pid:null,c:null,st:"",why:""});save();sheet={d:d,i:i+1,mood:"any",src:"mine",offset:0,ai:null,aiSeen:[],busy:false,err:""};render();renderSheet();}
+  else if(a==="insbefore"){var ar4=state.plan[d];ar4.splice(i,0,{k:"x"+Date.now(),t:0,label:"加碼",hint:"sight",pid:null,c:null,st:"",why:""});save();sheet={d:d,i:i,mood:"any",src:"mine",offset:0,ai:null,aiSeen:[],busy:false,err:""};render();renderSheet();}
+  else if(a==="unfix"){delete state.plan[d][i].fix;save();render();}
+  else if(a==="maprefresh"){mvView=null;state.mapSel=null;save();render();toast("地圖已更新");}
+  else if(a==="pf"){state.pf=v;save();render();}
+  else if(a==="aiday"){aiDay(d);}
+  else if(a==="resetplan"){state.plan={};state.del={};state.zone={};rebuild();save();render();}
+  else if(a==="reload"){render();}
+  else if(a==="chk"){state.chk=state.chk||{};state.chk[v]=!state.chk[v];save();render();}
+  else if(a==="quick"){var arr2=state.plan[d]||(state.plan[d]=[]),T={cafe:[990,"咖啡甜點","cafe"],food:[1110,"小吃餐廳","food"],shop:[870,"逛街","sight"],sight:[870,"景點","sight"],night:[1230,"夜景","night"]}[v],nk="x"+Date.now();
+    arr2.push({k:nk,t:T[0],label:T[1],hint:T[2],pid:null,c:null,st:"",why:""});save();
+    var ni2=0;arr2.forEach(function(q,qi){if(q.k===nk)ni2=qi;});
+    sheet={d:d,i:ni2,mood:({food:"eat",cafe:"cafe",night:"night",shop:"shop"})[v]||"any",src:"mine",offset:0,ai:null,aiSeen:[],busy:false,err:""};render();renderSheet();}
+  else if(a==="alt"){state.variant=(state.variant||0)+1;var c2=autoPlan(true);save();render();toast("換了一種排法，共 "+c2+" 段");}
+  else if(a==="auto"||a==="autoAll"){var cnt=autoPlan(a==="autoAll");save();render();toast(cnt?"已排好 "+cnt+" 段":"沒有可以填的空白");}
+  else if(a==="aiGap"){aiGap();}
+  else if(a==="region"){var rg=regionList()[+v];if(rg){mvView={sig:mvView?mvView.sig:"",fit:false,rgn:{la:rg.la,lo:rg.lo,z:Math.max(2.6,8/(window.devicePixelRatio||1))}};render();}}
+  else if(a==="mapday"){state.mapDay=+v;mvView=null;state.mapSel=null;save();render();}
+  else if(a==="mapreg"){state.mapReg=v;save();render();}
+  else if(a==="mapzoom"){state.mapZoom=!state.mapZoom;save();render();}
+  else if(a==="mapsel"){var mid=el.getAttribute("data-id");if(!mid)return;state.mapSel=(state.mapSel===mid?null:mid);render();}
+  else if(a==="mapclose"){state.mapSel=null;render();}
+  else if(a==="addto"){addToDay(el.getAttribute("data-id"),d);}
+  else if(a==="classify"){classify();}
+}
+document.addEventListener("change",function(e){
+  var el=e.target;
+  if(el.id==="fileIn"&&el.files&&el.files.length){msgImport="";Array.prototype.forEach.call(el.files,function(f){var rd=new FileReader();rd.onload=function(){importText(f.name,String(rd.result||""));};rd.readAsText(f);});return;}
+  if(el.getAttribute&&el.getAttribute("data-fix")){var fd=+el.getAttribute("data-d"),fi=+el.getAttribute("data-i");if(el.value){state.plan[fd][fi].fix=toMin(el.value);}save();render();return;}
+  var ok2=el.getAttribute&&el.getAttribute("data-oh");
+  if(ok2){var pp=placeById(el.getAttribute("data-id"));if(pp){var cur2=hoursOf(pp),n2={o:cur2.o,c:cur2.c,off:(cur2.off||[]).slice()};
+    if(ok2==="o")n2.o=toMin(el.value);else if(ok2==="c"){n2.c=toMin(el.value);if(n2.c<=n2.o)n2.c+=1440;}else n2.off=el.value===""?[]:[+el.value];
+    n2.est=false;pp.oh=n2;save();render();}return;}
+  var dk=el.getAttribute&&el.getAttribute("data-dset");
+  if(dk){var dd=+el.getAttribute("data-d");dset(dd)[dk]=el.value;rebuild();autoPlan(false);save();render();return;}
+  var k=el.getAttribute&&el.getAttribute("data-set");if(!k)return;
+  if(k==="parea"){state.places[+el.getAttribute("data-i")].area=el.value;save();render();return;}
+  if(k==="pcat"){state.places[+el.getAttribute("data-i")].cat=el.value;save();render();return;}
+  if(k==="pq"){state.pq=el.value;render();return;}
+  state.set[k]=el.value;if(k==="hotelArea")state.set.hotelCoord=null;
+  if(k!=="hotelName"){rebuild();}
+  save();
+});
+
+/* boot */
+state=load()||defaults();
+if(state.tab==="set")state.tab="places";
+(function(){var fresh=myPlaces(),byName={},have={};fresh.forEach(function(p){byName[p.name]=p;});
+  state.places.forEach(function(p){have[p.name]=1;if(p.src==="demo")p.pinned=false;var f=byName[p.name];if(p.src==="gmaps"&&f&&p.lat==null){p.lat=f.lat;p.lng=f.lng;p.area=f.area;p.rating=f.rating;p.rc=f.rc;p.hl=f.hl;}});
+  state.gone=state.gone||{};var add=fresh.filter(function(p){return !have[p.name]&&!state.gone[p.name];});if(add.length)state.places=add.concat(state.places);})();
+state.days=state.days||{};[1,2,3].forEach(function(d){state.days[d]=state.days[d]||{};});
+if(state.set.imm==null)state.set.imm=90;if(!state.set.transit)state.set.transit="bus";
+if(!state.mig5){state.mig5=1;state.del={};state.plan=state.plan||{};var anyF=false;
+  for(var dm=1;dm<=3;dm++){(state.plan[dm]||[]);state.plan[dm]=(state.plan[dm]||[]).filter(function(s){return !(String(s.k).charAt(0)==="x"&&/^朋友行程/.test(s.why||""));});}
+  rebuild();for(var dn=1;dn<=3;dn++)if((state.plan[dn]||[]).some(function(s){return slotItem(s);}))anyF=true;if(anyF)autoPlan(false);save();}
+if(!state.mig7){state.mig7=1;state.places.forEach(function(p){if(p.name==='Liberta'&&p.cat==='other')p.cat='food';if(p.cat==='other'){var g=guessCat(p.name);if(g!=='other')p.cat=g;}});save();}
+if(!state.mig6){state.mig6=1;state.places.forEach(function(p){p.on=true;});save();}
+if(!state.plan||!state.plan[1])rebuild();
+render();
+(async function(){
+  try{var c=window.claude&&await window.claude.use("sample");if(c){sampleFn=c;render();}}catch(e){}
+})();
+})();
+</script>
+
+</body></html>
